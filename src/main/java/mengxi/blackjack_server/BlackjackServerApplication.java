@@ -18,9 +18,9 @@ public class BlackjackServerApplication {
 	private PlayerService playerService;
 
 	@Autowired
-    public void setPlayerService(PlayerService playerService) {
-        this.playerService = playerService;
-    }
+	public void setPlayerService(PlayerService playerService) {
+		this.playerService = playerService;
+	}
 
 	@GetMapping("/hello")
 	public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
