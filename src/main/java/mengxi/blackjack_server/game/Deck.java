@@ -1,7 +1,10 @@
 package mengxi.blackjack_server.game;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+
 
 public class Deck {
     public static final int NUM_CARDS_IN_A_DECK = 54;
@@ -20,7 +23,7 @@ public class Deck {
         return servedCards >= NUM_CARDS_IN_A_DECK;
     }
 
-    public boolean serve(UUID personId) {
+    public boolean serve(final UUID personId) {
         if (this.isFull()) return false;
 
         int r = rand.nextInt(NUM_CARDS_IN_A_DECK - this.servedCards) + 1;
@@ -42,8 +45,21 @@ public class Deck {
         return false;  // Should throw exception
     }
 
-    public UUID getCardOwnerId(int i, int j) {
+    public UUID getCardOwnerId(final int i, final int j) {
         if (i<0 || i>=this.cards.length || j<0 || j>=this.cards[0].length) return null;
         return this.cards[i][j];
+    }
+
+    @SuppressWarnings("serial")
+    public List<String> getCards(final UUID personId) {
+        return new ArrayList<String>() {{
+            for (int i=0; i<cards.length; i++) {
+                for (int j=0; j<cards[0].length; j++) {
+                    if (cards[i][j] != null && cards[i][j].equals(personId)) {
+                        this.add(i+"#"+j);
+                    }
+                }
+            }
+        }};
     }
 }
