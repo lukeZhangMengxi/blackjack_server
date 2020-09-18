@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import mengxi.blackjack_server.db.service.PlayerService;
@@ -22,7 +24,7 @@ import mengxi.blackjack_server.db.entity.Player;
 public class BlackjackServerApplication {
 
 	private PlayerService playerService;
-	private Game g;
+	private Map<UUID, Game> games = new HashMap<UUID, Game>();
 
 	@Autowired
 	public void setPlayerService(PlayerService playerService) {
@@ -45,13 +47,13 @@ public class BlackjackServerApplication {
 	}
 
 	@GetMapping("/game/status")
-	public List<List<String>> status() {
+	public List<List<String>> status(@RequestParam UUID gameId) {
 		return new ArrayList<>() {
 			private static final long serialVersionUID = 1L;
 			{
-				if (g != null) {
-					this.add(g.getPlayerCards());
-					this.add(g.getDealerCards());
+				if (games.containsKey(gameId)) {
+					this.add(games.get(gameId).getPlayerCards());
+					this.add(games.get(gameId).getDealerCards());
 				}
 			}
 		};
@@ -59,8 +61,9 @@ public class BlackjackServerApplication {
 
 	@PostMapping("/game/start")
 	public UUID start(@RequestParam UUID playerId) {
-		g = new GameImpl();
+		Game g = new GameImpl();
 		g.start(playerId);
+		games.put(g.getGameId(), g);
 		return g.getGameId();
 	}
 
