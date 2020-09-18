@@ -6,3 +6,7 @@
 ### Test the database setup:
 1. `psql -h localhost -p 5432 -d appdb -U root`
 1. Enter password (`root` for now), then we should have psql SSL connection to the database.
+
+### Init SQL schema using psql
+1. `psql -h localhost -p 5432 -d appdb -U root -a -f psql_schema.sql`
+1. We could verify it by doing psql query like the last step.
