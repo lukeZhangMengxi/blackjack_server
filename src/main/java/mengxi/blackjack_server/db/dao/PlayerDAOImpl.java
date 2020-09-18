@@ -23,7 +23,7 @@ public class PlayerDAOImpl implements PlayerDAO {
                         .append("select * from player")
                         .toString();
 
-        return (List<Player>)template.query(sql, new BeanPropertyRowMapper(Player.class));
+        return template.query(sql, new BeanPropertyRowMapper<Player>());
     }
 
 }
