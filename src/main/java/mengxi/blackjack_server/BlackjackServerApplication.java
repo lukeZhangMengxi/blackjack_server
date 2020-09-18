@@ -61,7 +61,7 @@ public class BlackjackServerApplication {
 	public UUID start(@RequestParam UUID playerId) {
 		g = new GameImpl();
 		g.start(playerId);
-        return g.getGameId();
+		return g.getGameId();
 	}
 
 	public static void main(String[] args) {
