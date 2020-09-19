@@ -1,8 +1,10 @@
 package mengxi.game;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -44,5 +46,52 @@ public class DeckTest {
         }
 
         assertTrue(diffCounter > 0);
+    }
+
+    @Test
+    public void cardSum() {
+        Deck d = new Deck();
+
+        // Regular number sum
+        assertEquals(15, d.cardSum(
+            Arrays.asList("10#1", "5#3")
+        ));
+
+        // Ace as 11
+        assertEquals(21, d.cardSum(
+            Arrays.asList("1#1", "10#3")
+        ));
+
+        assertEquals(16, d.cardSum(
+            Arrays.asList("1#1", "5#3")
+        ));
+
+        // Ace as 1 when otherwise sum > 21
+        assertEquals(12, d.cardSum(
+            Arrays.asList("1#1", "1#0")
+        ));
+
+        assertEquals(17, d.cardSum(
+            Arrays.asList("1#1", "5#3", "1#0")
+        ));
+
+        // J Q K as 10
+        assertEquals(20, d.cardSum(
+            Arrays.asList("11#1", "12#3")
+        ));
+
+        assertEquals(12, d.cardSum(
+            Arrays.asList("13#1", "2#3")
+        ));
+
+        // More than 3 cards
+        assertEquals(15, d.cardSum(
+            Arrays.asList("2#1", "3#3", "5#0", "4#1", "1#1")
+        ));
+
+        // Eventual sum > 21
+        assertEquals(22, d.cardSum(
+            Arrays.asList("13#1", "2#3", "13#2")
+        ));
     }
 }

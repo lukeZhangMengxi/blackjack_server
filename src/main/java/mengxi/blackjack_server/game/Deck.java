@@ -62,4 +62,21 @@ public class Deck {
             }
         }};
     }
+
+    public int cardSum(List<String> cards) {
+        // Face cards (J/11,Q/12,K/13) are worth 10. 
+        // Aces (A/1) are worth 1 or 11, whichever makes a better hand.
+        int sum = 0, numAce = 0, tmp;
+        for (String card : cards) {
+            tmp = Integer.parseInt(card.split("#")[0]);
+            if (tmp >= 10) tmp = 10;
+            else if (tmp == 1) {
+                tmp = 11; numAce++;
+            }
+
+            sum += tmp;
+        }
+        if (sum > 21 && numAce > 0) sum -= 10;
+        return sum;
+    }
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ public class BlackjackServerApplication {
 	}
 
 	@GetMapping("/game/{gameId}/status")
+	@ResponseBody
 	public List<List<String>> status(@PathVariable UUID gameId) {
 		return new ArrayList<>() {
 			private static final long serialVersionUID = 1L;
@@ -63,6 +65,7 @@ public class BlackjackServerApplication {
 	}
 
 	@PostMapping("/game/start")
+	@ResponseBody
 	public UUID start(@RequestParam UUID playerId) {
 		Game g = new GameImpl();
 		g.start(playerId);
@@ -75,6 +78,18 @@ public class BlackjackServerApplication {
 		if (games.containsKey(gameId)) {
 			Game g = games.get(gameId);
 			g.serveRandomCard(playerId);
+			return new ResponseEntity<>(null, HttpStatus.OK);
+		}
+		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+	}
+
+	@PostMapping("/game/{gameId}/stand")
+	public ResponseEntity<Object> stand(@RequestParam UUID playerId, @PathVariable UUID gameId) {
+		if (games.containsKey(gameId)) {
+			Game g = games.get(gameId);
+			while (g.cardSum(g.getDealerCards()) < 17) {
+				g.serveRandomCard(g.getDelearId());
+			}
 			return new ResponseEntity<>(null, HttpStatus.OK);
 		}
 		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);

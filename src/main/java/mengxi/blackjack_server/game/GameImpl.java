@@ -40,5 +40,15 @@ public class GameImpl implements Game {
     public List<String> getPlayerCards() {
         return this.deck.getCards(this.playerId);
     }
+
+    @Override
+    public UUID getDelearId() {
+        return this.dealerId;
+    }
+
+    @Override
+    public int cardSum(List<String> cards) {
+        return this.deck.cardSum(cards);
+    }
     
 }

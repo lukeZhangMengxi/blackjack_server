@@ -9,6 +9,8 @@ public interface Game {
     public boolean serveRandomCard(UUID personId);
 
     public UUID getGameId();
+    public UUID getDelearId();
     public List<String> getDealerCards();
     public List<String> getPlayerCards();
+    public int cardSum(List<String> cards);
 }
