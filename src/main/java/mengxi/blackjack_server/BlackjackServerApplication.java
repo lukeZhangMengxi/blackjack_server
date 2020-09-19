@@ -3,7 +3,10 @@ package mengxi.blackjack_server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,8 +49,8 @@ public class BlackjackServerApplication {
 		return playerService.getAll();
 	}
 
-	@GetMapping("/game/status")
-	public List<List<String>> status(@RequestParam UUID gameId) {
+	@GetMapping("/game/{gameId}/status")
+	public List<List<String>> status(@PathVariable UUID gameId) {
 		return new ArrayList<>() {
 			private static final long serialVersionUID = 1L;
 			{
@@ -65,6 +68,16 @@ public class BlackjackServerApplication {
 		g.start(playerId);
 		games.put(g.getGameId(), g);
 		return g.getGameId();
+	}
+
+	@PostMapping("/game/{gameId}/hit")
+	public ResponseEntity<Object> hit(@RequestParam UUID playerId, @PathVariable UUID gameId) {
+		if (games.containsKey(gameId)) {
+			Game g = games.get(gameId);
+			g.serveRandomCard(playerId);
+			return new ResponseEntity<>(null, HttpStatus.OK);
+		}
+		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 	}
 
 	public static void main(String[] args) {

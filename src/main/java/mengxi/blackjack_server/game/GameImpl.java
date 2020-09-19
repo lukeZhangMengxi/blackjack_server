@@ -15,14 +15,14 @@ public class GameImpl implements Game {
         this.playerId = playerId;
 
         deck = new Deck();
-        this.serveRandomCard(playerId, deck);
-        this.serveRandomCard(playerId, deck);
-        this.serveRandomCard(dealerId, deck);
-        this.serveRandomCard(dealerId, deck);
+        this.serveRandomCard(playerId);
+        this.serveRandomCard(playerId);
+        this.serveRandomCard(dealerId);
+        this.serveRandomCard(dealerId);
     }
 
     @Override
-    public boolean serveRandomCard(UUID personId, Deck deck) {
+    public boolean serveRandomCard(UUID personId) {
         return deck.serve(personId);
     }
 
