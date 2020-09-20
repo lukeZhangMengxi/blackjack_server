@@ -76,7 +76,7 @@ public class Deck {
 
             sum += tmp;
         }
-        if (sum > 21 && numAce > 0) sum -= 10;
+        while (sum > 21 && numAce-- > 0) sum -= 10;
         return sum;
     }
 }
