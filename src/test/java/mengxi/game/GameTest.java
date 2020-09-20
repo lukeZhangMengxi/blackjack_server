@@ -1,7 +1,12 @@
 package mengxi.game;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,5 +41,26 @@ public class GameTest {
         assertEquals(2, playerCards.size());
         assertEquals(2, dealerCards.size());
         assertUnique(playerCards, dealerCards);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void getResult() {
+        Game g = mock(GameImpl.class);
+        UUID someId = UUID.randomUUID();
+        doCallRealMethod().when(g).getResult(any(UUID.class));
+        doCallRealMethod().when(g).cardSum(any(List.class));
+        
+        when(g.getPlayerCards()).thenReturn(Arrays.asList("1#2", "5#1"));
+        when(g.getDealerCards()).thenReturn(Arrays.asList("1#2", "5#1"));
+        assertEquals(0, g.getResult(someId));
+
+        when(g.getPlayerCards()).thenReturn(Arrays.asList("11#2", "5#1"));
+        when(g.getDealerCards()).thenReturn(Arrays.asList("5#2", "5#1"));
+        assertEquals(1, g.getResult(someId));
+
+        when(g.getPlayerCards()).thenReturn(Arrays.asList("11#2", "5#1", "13#2"));
+        when(g.getDealerCards()).thenReturn(Arrays.asList("5#2", "5#1"));
+        assertEquals(-1, g.getResult(someId));
     }
 }
