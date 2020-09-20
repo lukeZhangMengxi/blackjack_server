@@ -14,8 +14,8 @@ import mengxi.blackjack_server.game.Deck;
 public class DeckTest {
     @Test
     public void deckServeAllCards() {
-        final Deck d = new Deck();
-        final UUID id = UUID.randomUUID();
+        Deck d = new Deck();
+        UUID id = UUID.randomUUID();
         for (int i = 0; i < Deck.NUM_CARDS_IN_A_DECK; i++) {
             assertFalse(d.isFull());
             assertTrue(d.serve(id));
@@ -25,7 +25,7 @@ public class DeckTest {
 
     @Test
     public void deckServeCardsInRandomOrder() {
-        final Deck d1 = new Deck(), d2 = new Deck();
+        Deck d1 = new Deck(), d2 = new Deck();
         UUID id;
         for (int i = 0; i < Deck.NUM_CARDS_IN_A_DECK; i++) {
             id = UUID.randomUUID();
