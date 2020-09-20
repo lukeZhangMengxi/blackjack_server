@@ -13,4 +13,5 @@ public interface Game {
     public List<String> getDealerCards();
     public List<String> getPlayerCards();
     public int cardSum(List<String> cards);
+    public int getResult(UUID playerId);
 }

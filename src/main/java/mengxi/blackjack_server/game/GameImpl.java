@@ -48,7 +48,23 @@ public class GameImpl implements Game {
 
     @Override
     public int cardSum(List<String> cards) {
-        return this.deck.cardSum(cards);
+        return Deck.cardSum(cards);
+    }
+
+    @Override
+    public int getResult(UUID playerId) {
+        int dealerPoints = this.cardSum(this.getDealerCards());
+        int playerPoints = this.cardSum(this.getPlayerCards());
+        int rst = 0;
+        if (playerPoints > 21) {
+            rst = -1;
+        } else if (playerPoints == dealerPoints) {
+            rst = 0;
+        } else {
+            if (dealerPoints > 21) rst = 1;
+            else rst = (playerPoints > dealerPoints) ? 1 : -1;
+        }
+        return rst;
     }
     
 }

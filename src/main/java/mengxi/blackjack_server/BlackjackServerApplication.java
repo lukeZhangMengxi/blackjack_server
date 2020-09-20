@@ -95,6 +95,14 @@ public class BlackjackServerApplication {
 		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 	}
 
+	@PostMapping("/game/{gameId}/result")
+	public ResponseEntity<Integer> close(@RequestParam UUID playerId, @PathVariable UUID gameId) {
+		if (games.containsKey(gameId)) {
+			return new ResponseEntity<>(games.get(gameId).getResult(playerId), HttpStatus.OK);
+		}
+		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+	}
+
 	public static void main(String[] args) {
 		SpringApplication.run(BlackjackServerApplication.class, args);
 	}
