@@ -1,0 +1,135 @@
+{
+	"info": {
+		"_postman_id": "05bb93d6-38ee-48e9-9fa1-4f678154cb63",
+		"name": "test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "start",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6e86a0fe-01fd-4562-8d47-3f48d8c3c0c7",
+						"exec": [
+							"pm.environment.set(\"gameId\", pm.response.json());",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/game/start?playerId=a6682fed-e764-43ff-8795-f2f2c7a45c84",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"game",
+						"start"
+					],
+					"query": [
+						{
+							"key": "playerId",
+							"value": "a6682fed-e764-43ff-8795-f2f2c7a45c84"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "localhost:8080/game/{{gameId}}/status"
+			},
+			"response": []
+		},
+		{
+			"name": "hit",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/game/{{gameId}}/hit?playerId=a6682fed-e764-43ff-8795-f2f2c7a45c84",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"game",
+						"{{gameId}}",
+						"hit"
+					],
+					"query": [
+						{
+							"key": "playerId",
+							"value": "a6682fed-e764-43ff-8795-f2f2c7a45c84"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "stand",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/game/{{gameId}}/stand?playerId=a6682fed-e764-43ff-8795-f2f2c7a45c84",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"game",
+						"{{gameId}}",
+						"stand"
+					],
+					"query": [
+						{
+							"key": "playerId",
+							"value": "a6682fed-e764-43ff-8795-f2f2c7a45c84"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "result",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/game/{{gameId}}/result?playerId=a6682fed-e764-43ff-8795-f2f2c7a45c84",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"game",
+						"{{gameId}}",
+						"result"
+					],
+					"query": [
+						{
+							"key": "playerId",
+							"value": "a6682fed-e764-43ff-8795-f2f2c7a45c84"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
