@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,6 +51,7 @@ public class BlackjackServerApplication {
 		return playerService.getAll();
 	}
 
+	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@GetMapping("/game/{gameId}/status")
 	@ResponseBody
 	public List<List<String>> status(@PathVariable UUID gameId) {
@@ -64,6 +66,7 @@ public class BlackjackServerApplication {
 		};
 	}
 
+	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@PostMapping("/game/start")
 	@ResponseBody
 	public UUID start(@RequestParam UUID playerId) {
