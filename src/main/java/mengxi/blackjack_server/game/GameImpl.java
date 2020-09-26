@@ -7,6 +7,7 @@ public class GameImpl implements Game {
 
     UUID id, playerId, dealerId;
     Deck deck;
+    int playerBet;
 
     @Override
     public void start(UUID playerId) {
@@ -65,6 +66,17 @@ public class GameImpl implements Game {
             else rst = (playerPoints > dealerPoints) ? 1 : -1;
         }
         return rst;
+    }
+
+    @Override
+    public int getPlayerBet() {
+        return this.playerBet;
+    }
+
+    @Override
+    public void setPlayerBet(int bet) throws Exception {
+        if (bet < 0) throw new Exception("Bet can not be negative.");
+        this.playerBet = bet;
     }
     
 }

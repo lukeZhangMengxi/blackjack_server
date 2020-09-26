@@ -8,10 +8,14 @@ public interface Game {
     public void start(UUID playerId);
     public boolean serveRandomCard(UUID personId);
 
+    public int cardSum(List<String> cards);
+
     public UUID getGameId();
     public UUID getDelearId();
+    public int getPlayerBet();
     public List<String> getDealerCards();
     public List<String> getPlayerCards();
-    public int cardSum(List<String> cards);
     public int getResult(UUID playerId);
+
+    public void setPlayerBet(int bet) throws Exception;
 }

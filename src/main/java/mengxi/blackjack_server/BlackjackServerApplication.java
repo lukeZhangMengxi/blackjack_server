@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,7 @@ public class BlackjackServerApplication {
 				if (games.containsKey(gameId)) {
 					this.add(games.get(gameId).getPlayerCards());
 					this.add(games.get(gameId).getDealerCards());
+					this.add(Arrays.asList(games.get(gameId).getPlayerBet() + ""));
 				}
 			}
 		};
@@ -76,6 +78,23 @@ public class BlackjackServerApplication {
 		return g.getGameId();
 	}
 
+	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+	@PostMapping("/game/{gameId}/bet")
+	public ResponseEntity<Object> bet(@RequestParam UUID playerId, @RequestParam Integer bet,
+			@PathVariable UUID gameId) {
+		if (games.containsKey(gameId)) {
+			Game g = games.get(gameId);
+			try {
+				g.setPlayerBet(bet);
+				return new ResponseEntity<>(null, HttpStatus.OK);
+			} catch (Exception e) {
+				return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
+			}
+		}
+		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+	}
+
+	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@PostMapping("/game/{gameId}/hit")
 	public ResponseEntity<Object> hit(@RequestParam UUID playerId, @PathVariable UUID gameId) {
 		if (games.containsKey(gameId)) {
@@ -86,6 +105,7 @@ public class BlackjackServerApplication {
 		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 	}
 
+	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@PostMapping("/game/{gameId}/stand")
 	public ResponseEntity<Object> stand(@RequestParam UUID playerId, @PathVariable UUID gameId) {
 		if (games.containsKey(gameId)) {
@@ -98,7 +118,8 @@ public class BlackjackServerApplication {
 		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 	}
 
-	@PostMapping("/game/{gameId}/result")
+	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+	@GetMapping("/game/{gameId}/result")
 	public ResponseEntity<Integer> close(@RequestParam UUID playerId, @PathVariable UUID gameId) {
 		if (games.containsKey(gameId)) {
 			return new ResponseEntity<>(games.get(gameId).getResult(playerId), HttpStatus.OK);
