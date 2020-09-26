@@ -76,6 +76,7 @@ public class BlackjackServerApplication {
 		return g.getGameId();
 	}
 
+	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@PostMapping("/game/{gameId}/hit")
 	public ResponseEntity<Object> hit(@RequestParam UUID playerId, @PathVariable UUID gameId) {
 		if (games.containsKey(gameId)) {
@@ -86,6 +87,7 @@ public class BlackjackServerApplication {
 		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 	}
 
+	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@PostMapping("/game/{gameId}/stand")
 	public ResponseEntity<Object> stand(@RequestParam UUID playerId, @PathVariable UUID gameId) {
 		if (games.containsKey(gameId)) {
@@ -98,7 +100,8 @@ public class BlackjackServerApplication {
 		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 	}
 
-	@PostMapping("/game/{gameId}/result")
+	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+	@GetMapping("/game/{gameId}/result")
 	public ResponseEntity<Integer> close(@RequestParam UUID playerId, @PathVariable UUID gameId) {
 		if (games.containsKey(gameId)) {
 			return new ResponseEntity<>(games.get(gameId).getResult(playerId), HttpStatus.OK);
