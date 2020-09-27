@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +58,7 @@ public class BlackjackServerApplication {
 	}
 
 	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-	@RequestMapping(value = "/game/{gameId}/status", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(method = RequestMethod.GET, value = "/game/{gameId}/status", produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<Object> status(@PathVariable UUID gameId) throws JsonProcessingException {
 		if (games.containsKey(gameId)) {
