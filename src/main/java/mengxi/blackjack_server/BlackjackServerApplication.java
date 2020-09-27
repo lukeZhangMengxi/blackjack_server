@@ -9,20 +9,24 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import mengxi.blackjack_server.db.service.PlayerService;
 import mengxi.blackjack_server.game.Game;
 import mengxi.blackjack_server.game.GameImpl;
+import mengxi.blackjack_server.http_msg.StatusResponse;
 import mengxi.blackjack_server.db.entity.Player;
 
 @SpringBootApplication
@@ -31,6 +35,7 @@ public class BlackjackServerApplication {
 
 	private PlayerService playerService;
 	private Map<UUID, Game> games = new HashMap<UUID, Game>();
+	private ObjectMapper mapper = new ObjectMapper();
 
 	@Autowired
 	public void setPlayerService(PlayerService playerService) {
@@ -53,19 +58,17 @@ public class BlackjackServerApplication {
 	}
 
 	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-	@GetMapping("/game/{gameId}/status")
+	@RequestMapping(method = RequestMethod.GET, value = "/game/{gameId}/status", produces = "application/json")
 	@ResponseBody
-	public List<List<String>> status(@PathVariable UUID gameId) {
-		return new ArrayList<>() {
-			private static final long serialVersionUID = 1L;
-			{
-				if (games.containsKey(gameId)) {
-					this.add(games.get(gameId).getPlayerCards());
-					this.add(games.get(gameId).getDealerCards());
-					this.add(Arrays.asList(games.get(gameId).getPlayerBet() + ""));
-				}
-			}
-		};
+	public ResponseEntity<Object> status(@PathVariable UUID gameId) throws JsonProcessingException {
+		if (games.containsKey(gameId)) {
+			Game g = games.get(gameId);
+			StatusResponse msg = new StatusResponse(
+				g.getPlayerBet(), g.getPlayerCards(), g.getDealerCards()
+			);
+			return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
+		}
+		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 	}
 
 	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
