@@ -89,6 +89,7 @@ public class BlackjackServerApplication {
 			Game g = games.get(gameId);
 			try {
 				g.setPlayerBet(bet);
+				playerService.updateDeposit(playerId, 0 - bet);
 				return new ResponseEntity<>(null, HttpStatus.OK);
 			} catch (Exception e) {
 				return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
@@ -125,7 +126,19 @@ public class BlackjackServerApplication {
 	@GetMapping("/game/{gameId}/result")
 	public ResponseEntity<Integer> close(@RequestParam UUID playerId, @PathVariable UUID gameId) {
 		if (games.containsKey(gameId)) {
-			return new ResponseEntity<>(games.get(gameId).getResult(playerId), HttpStatus.OK);
+			Game g = games.get(gameId);
+			int result = g.getResult(playerId);
+
+			try {
+				// If win, return double bet
+				if (result == 1) playerService.updateDeposit(playerId, 2*g.getPlayerBet());
+				// If tied, return bet
+				else if (result == 0) playerService.updateDeposit(playerId, g.getPlayerBet());
+				
+				return new ResponseEntity<>(result, HttpStatus.OK);
+			} catch(Exception e) {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
 		}
 		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 	}
