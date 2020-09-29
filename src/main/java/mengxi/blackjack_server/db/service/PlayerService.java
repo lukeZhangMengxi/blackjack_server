@@ -11,5 +11,5 @@ import mengxi.blackjack_server.db.entity.Player;
 public interface PlayerService {
     List<Player> getAll();
     long getDeposit(UUID playerId);
-    void updateDeposit(UUID playerId, long amount) throws Exception;
+    long updateDeposit(UUID playerId, long amount) throws Exception;
 }

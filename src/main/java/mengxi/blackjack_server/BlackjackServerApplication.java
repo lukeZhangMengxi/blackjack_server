@@ -130,12 +130,15 @@ public class BlackjackServerApplication {
 			int result = g.getResult(playerId);
 
 			try {
+				long newDeposit = -1;
 				// If win, return double bet
-				if (result == 1) playerService.updateDeposit(playerId, 2*g.getPlayerBet());
+				if (result == 1) newDeposit = playerService.updateDeposit(playerId, 2*g.getPlayerBet());
 				// If tied, return bet
-				else if (result == 0) playerService.updateDeposit(playerId, g.getPlayerBet());
+				else if (result == 0) newDeposit = playerService.updateDeposit(playerId, g.getPlayerBet());
+				// else, return 0
+				else newDeposit = playerService.getDeposit(playerId);
 				
-				ResultResponse msg = new ResultResponse(result, playerService.getDeposit(playerId));
+				ResultResponse msg = new ResultResponse(result, newDeposit);
 				return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
 			} catch(Exception e) {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
