@@ -1,10 +1,17 @@
 package mengxi.blackjack_server.db.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
 import mengxi.blackjack_server.db.entity.Player;
@@ -27,13 +34,22 @@ public class PlayerDAOImpl implements PlayerDAO {
 
     @Override
     public long getDeposit(UUID playerId) {
-        final String sql = new StringBuilder()
-            .append("select deposit from player where id='")
-            .append(playerId.toString())
-            .append("'")
-            .toString();
+        final String sql = "select * from player where id = :id";
+        SqlParameterSource param = new MapSqlParameterSource()
+                                    .addValue("id", playerId);
+        
+        Player p = template.queryForObject(sql, param, new BeanPropertyRowMapper<Player>(Player.class));
+        return p.getDeposit();
+    }
 
-        return template.query(sql, new BeanPropertyRowMapper<Long>(Long.class)).get(0);
+    @Override
+    public void updateDeposit(UUID playerId, long amount) {
+        final String sql = "update player set deposit = deposit + :amount where id=:id";
+        SqlParameterSource param = new MapSqlParameterSource()
+                                    .addValue("id", playerId)
+                                    .addValue("amount", amount);
+        
+        template.update(sql, param, new GeneratedKeyHolder());
     }
 
 }
