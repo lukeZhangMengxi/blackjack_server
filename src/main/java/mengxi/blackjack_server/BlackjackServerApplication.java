@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import mengxi.blackjack_server.db.service.PlayerService;
 import mengxi.blackjack_server.game.Game;
 import mengxi.blackjack_server.game.GameImpl;
+import mengxi.blackjack_server.http_msg.ResultResponse;
 import mengxi.blackjack_server.http_msg.StatusResponse;
 import mengxi.blackjack_server.db.entity.Player;
 
@@ -59,7 +60,6 @@ public class BlackjackServerApplication {
 
 	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@RequestMapping(method = RequestMethod.GET, value = "/game/{gameId}/status", produces = "application/json")
-	@ResponseBody
 	public ResponseEntity<Object> status(@PathVariable UUID gameId) throws JsonProcessingException {
 		if (games.containsKey(gameId)) {
 			Game g = games.get(gameId);
@@ -89,6 +89,7 @@ public class BlackjackServerApplication {
 			Game g = games.get(gameId);
 			try {
 				g.setPlayerBet(bet);
+				playerService.updateDeposit(playerId, 0 - bet);
 				return new ResponseEntity<>(null, HttpStatus.OK);
 			} catch (Exception e) {
 				return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
@@ -122,10 +123,26 @@ public class BlackjackServerApplication {
 	}
 
 	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-	@GetMapping("/game/{gameId}/result")
-	public ResponseEntity<Integer> close(@RequestParam UUID playerId, @PathVariable UUID gameId) {
+	@RequestMapping(method = RequestMethod.GET, value = "/game/{gameId}/result", produces = "application/json")
+	public ResponseEntity<Object> close(@RequestParam UUID playerId, @PathVariable UUID gameId) {
 		if (games.containsKey(gameId)) {
-			return new ResponseEntity<>(games.get(gameId).getResult(playerId), HttpStatus.OK);
+			Game g = games.get(gameId);
+			int result = g.getResult(playerId);
+
+			try {
+				long newDeposit = -1;
+				// If win, return double bet
+				if (result == 1) newDeposit = playerService.updateDeposit(playerId, 2*g.getPlayerBet());
+				// If tied, return bet
+				else if (result == 0) newDeposit = playerService.updateDeposit(playerId, g.getPlayerBet());
+				// else, return 0
+				else newDeposit = playerService.getDeposit(playerId);
+				
+				ResultResponse msg = new ResultResponse(result, newDeposit);
+				return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
+			} catch(Exception e) {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
 		}
 		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 	}
