@@ -17,19 +17,23 @@ public class Player {
 
     private String lastName;
 
+    private long deposit;
+
 
     @Override
     public String toString() {
-        return String.format("Customer[id=%d, firstName='%s', lastName='%s']", 
-        id, firstName, lastName);
+        return String.format("Customer[id=%d, firstName='%s', lastName='%s', deposit=%d]", 
+        id, firstName, lastName, deposit);
     }
 
     public UUID getId() { return id; }
     public String getFirstName() { return firstName; }
     public String getLastName() { return lastName; }
+    public long getDeposit() { return deposit; }
 
     public void setId(UUID id) { this.id = id; }
     public void setFirstName(String firstName) { this.firstName = firstName; }
     public void setLastName(String lastName) { this.lastName = lastName; }
+    public void setDeposit(long deposit) { this.deposit = deposit; }
 
 }
