@@ -23,6 +23,9 @@ public class PlayerServiceImpl implements PlayerService {
     public long getDeposit(UUID playerId) { return playerDAO.getDeposit(playerId); }
 
     @Transactional
+    public Player getPlayer(UUID playerId) { return playerDAO.getPlayer(playerId); }
+
+    @Transactional
     public long updateDeposit(UUID playerId, long amount) throws Exception {
         long currentDeposit = playerDAO.getDeposit(playerId);
         if (currentDeposit + amount < 0) {
