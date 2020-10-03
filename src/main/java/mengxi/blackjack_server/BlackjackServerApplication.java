@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import mengxi.blackjack_server.db.service.PlayerService;
 import mengxi.blackjack_server.game.Game;
 import mengxi.blackjack_server.game.GameImpl;
+import mengxi.blackjack_server.http_msg.PlayerRsp;
 import mengxi.blackjack_server.http_msg.ResultResponse;
 import mengxi.blackjack_server.http_msg.StatusResponse;
 import mengxi.blackjack_server.db.entity.Player;
@@ -59,12 +60,25 @@ public class BlackjackServerApplication {
 	}
 
 	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+	@RequestMapping(method = RequestMethod.GET, value = "/player/{playerId}", produces = "application/json")
+	public ResponseEntity<Object> player(@PathVariable UUID playerId) throws JsonProcessingException {
+		Player p = playerService.getPlayer(playerId);
+		if (p != null) {
+			PlayerRsp msg = new PlayerRsp(
+				p.getId(), p.getFirstName(), p.getLastName(), p.getDeposit()
+			);
+			return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
+		}
+		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+	}
+
+	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@RequestMapping(method = RequestMethod.GET, value = "/game/{gameId}/status", produces = "application/json")
-	public ResponseEntity<Object> status(@PathVariable UUID gameId) throws JsonProcessingException {
+	public ResponseEntity<Object> status(@PathVariable UUID gameId, @RequestParam UUID playerId) throws JsonProcessingException {
 		if (games.containsKey(gameId)) {
 			Game g = games.get(gameId);
 			StatusResponse msg = new StatusResponse(
-				g.getPlayerBet(), g.getPlayerCards(), g.getDealerCards()
+				g.getPlayerCards(), g.getDealerCards(), g.getPlayerBet(), playerService.getDeposit(playerId)
 			);
 			return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
 		}

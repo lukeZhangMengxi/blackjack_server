@@ -48,4 +48,13 @@ public class PlayerDAOImpl implements PlayerDAO {
         template.update(sql, param, new GeneratedKeyHolder());
     }
 
+    @Override
+    public Player getPlayer(UUID playerId) {
+        final String sql = "select * from player where id = :id";
+        SqlParameterSource param = new MapSqlParameterSource()
+                                    .addValue("id", playerId);
+        
+        return template.queryForObject(sql, param, new BeanPropertyRowMapper<Player>(Player.class));
+    }
+
 }
