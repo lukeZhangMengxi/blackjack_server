@@ -60,11 +60,11 @@ public class BlackjackServerApplication {
 
 	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@RequestMapping(method = RequestMethod.GET, value = "/game/{gameId}/status", produces = "application/json")
-	public ResponseEntity<Object> status(@PathVariable UUID gameId) throws JsonProcessingException {
+	public ResponseEntity<Object> status(@PathVariable UUID gameId, @RequestParam UUID playerId) throws JsonProcessingException {
 		if (games.containsKey(gameId)) {
 			Game g = games.get(gameId);
 			StatusResponse msg = new StatusResponse(
-				g.getPlayerBet(), g.getPlayerCards(), g.getDealerCards()
+				g.getPlayerCards(), g.getDealerCards(), g.getPlayerBet(), playerService.getDeposit(playerId)
 			);
 			return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
 		}
