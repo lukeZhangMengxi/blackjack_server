@@ -1,4 +1,4 @@
-package mengxi.game;
+package mengxi.blackjack_server.game;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -13,9 +13,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-
-import mengxi.blackjack_server.game.Game;
-import mengxi.blackjack_server.game.GameImpl;
 
 public class GameTest {
 
