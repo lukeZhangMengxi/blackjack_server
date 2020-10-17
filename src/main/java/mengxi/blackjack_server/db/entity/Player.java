@@ -17,32 +17,49 @@ public class Player {
 
     private long deposit;
 
-    public Player() {};
-    public Player(String id, String name, long deposit) {
-        this.id = UUID.fromString(id); this.displayName = name; this.deposit = deposit;
-    }
+    public Player() {
+    };
 
+    public Player(String id, String name, long deposit) {
+        this.id = UUID.fromString(id);
+        this.displayName = name;
+        this.deposit = deposit;
+    }
 
     @Override
     public String toString() {
-        return String.format("Customer[id=%d, displayName='%s', deposit=%d]", 
-        id, displayName, deposit);
+        return String.format("Customer[id=%d, displayName='%s', deposit=%d]", id, displayName, deposit);
     }
 
-    public UUID getId() { return id; }
-    public String getDisplayName() { return displayName; }
-    public long getDeposit() { return deposit; }
+    public UUID getId() {
+        return id;
+    }
 
-    public void setId(UUID id) { this.id = id; }
-    public void setDisplayName(String displayName) { this.displayName = displayName; }
-    public void setDeposit(long deposit) { this.deposit = deposit; }
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public long getDeposit() {
+        return deposit;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public void setDeposit(long deposit) {
+        this.deposit = deposit;
+    }
 
     @Override
     public boolean equals(Object obj) {
         Player other = (Player) obj;
-        return this.id.toString().equals(other.getId().toString()) &&
-            this.displayName.equals(other.getDisplayName()) &&
-            this.deposit == other.getDeposit();
+        return this.id.toString().equals(other.getId().toString()) && this.displayName.equals(other.getDisplayName())
+                && this.deposit == other.getDeposit();
     }
 
 }

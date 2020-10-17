@@ -18,10 +18,14 @@ public class GameTest {
 
     @SuppressWarnings("serial")
     void assertUnique(List<String> a, List<String> b) {
-        Set<String> s = new HashSet<>() {{
-            for (String s : a) this.add(s);
-            for (String s : b) this.add(s);
-        }};
+        Set<String> s = new HashSet<>() {
+            {
+                for (String s : a)
+                    this.add(s);
+                for (String s : b)
+                    this.add(s);
+            }
+        };
 
         assertEquals(a.size() + b.size(), s.size());
     }
@@ -47,7 +51,7 @@ public class GameTest {
         UUID someId = UUID.randomUUID();
         doCallRealMethod().when(g).getResult(any(UUID.class));
         doCallRealMethod().when(g).cardSum(any(List.class));
-        
+
         when(g.getPlayerCards()).thenReturn(Arrays.asList("1#2", "5#1"));
         when(g.getDealerCards()).thenReturn(Arrays.asList("1#2", "5#1"));
         assertEquals(0, g.getResult(someId));

@@ -29,18 +29,17 @@ import mengxi.blackjack_server.db.entity.Player;
 @SuppressWarnings("serial")
 public class PlayerDAOTest {
 
-    private static final String JDBC_DRIVER = org.h2.Driver.class.getName();
+	private static final String JDBC_DRIVER = org.h2.Driver.class.getName();
 	private static final String JDBC_URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
 	private static final String USER = "sa";
 	private static final String PASSWORD = "";
 
-	private PlayerDAOImpl playerDAO = new PlayerDAOImpl(
-		new NamedParameterJdbcTemplate(getDataSource())
-	);
+	private PlayerDAOImpl playerDAO = new PlayerDAOImpl(new NamedParameterJdbcTemplate(getDataSource()));
 
 	@BeforeClass
 	public static void createSchema() throws Exception {
-		RunScript.execute(JDBC_URL, USER, PASSWORD, "/Users/zhangmengxi/workspace/blackjack_server/db/psql_schema.sql", StandardCharsets.UTF_8, false);
+		RunScript.execute(JDBC_URL, USER, PASSWORD, "/Users/zhangmengxi/workspace/blackjack_server/db/psql_schema.sql",
+				StandardCharsets.UTF_8, false);
 	}
 
 	@Before
@@ -50,8 +49,8 @@ public class PlayerDAOTest {
 	}
 
 	private IDataSet readDataSet() throws Exception {
-		return new FlatXmlDataSetBuilder()
-			.build(new File("/Users/zhangmengxi/workspace/blackjack_server/src/test/java/mengxi/blackjack_server/db/data.xml"));
+		return new FlatXmlDataSetBuilder().build(new File(
+				"/Users/zhangmengxi/workspace/blackjack_server/src/test/java/mengxi/blackjack_server/db/data.xml"));
 	}
 
 	private void cleanlyInsert(IDataSet dataSet) throws Exception {
@@ -59,9 +58,9 @@ public class PlayerDAOTest {
 		databaseTester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
 		databaseTester.setDataSet(dataSet);
 		databaseTester.onSetup();
-    }
-    
-    private DataSource getDataSource() {
+	}
+
+	private DataSource getDataSource() {
 		JdbcDataSource dataSource = new JdbcDataSource();
 		dataSource.setURL(JDBC_URL);
 		dataSource.setUser(USER);
@@ -72,23 +71,25 @@ public class PlayerDAOTest {
 	@Test
 	public void selectAllTest() {
 		List<Player> actual = playerDAO.getAll();
-        
-        List<Player> expected = new ArrayList<Player>() {{
-			this.add(new Player("8730ba8d-cba1-4e6b-a6da-d463727a57c9", "Larry", 100));
-			this.add(new Player("766a84e7-22bd-4ed5-aacd-203a5b47a49e", "LOL", 500));
-			this.add(new Player("2d896eb0-cfee-4196-8b9c-d7f5aa464f1c", "Lee", 1100));
-        }};
 
-        assertEquals(expected.size(), actual.size());
-        for (int i=0; i<expected.size(); i++) {
-            assertEquals(expected.get(i), actual.get(i));
-        }
+		List<Player> expected = new ArrayList<Player>() {
+			{
+				this.add(new Player("8730ba8d-cba1-4e6b-a6da-d463727a57c9", "Larry", 100));
+				this.add(new Player("766a84e7-22bd-4ed5-aacd-203a5b47a49e", "LOL", 500));
+				this.add(new Player("2d896eb0-cfee-4196-8b9c-d7f5aa464f1c", "Lee", 1100));
+			}
+		};
+
+		assertEquals(expected.size(), actual.size());
+		for (int i = 0; i < expected.size(); i++) {
+			assertEquals(expected.get(i), actual.get(i));
+		}
 	}
 
 	@Test
 	public void selectOnePlayerTest() {
 		Player actual = playerDAO.getPlayer(UUID.fromString("8730ba8d-cba1-4e6b-a6da-d463727a57c9"));
-        Player expected = new Player("8730ba8d-cba1-4e6b-a6da-d463727a57c9", "Larry", 100);
+		Player expected = new Player("8730ba8d-cba1-4e6b-a6da-d463727a57c9", "Larry", 100);
 		assertEquals(expected, actual);
 	}
 

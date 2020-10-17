@@ -62,8 +62,10 @@ public class GameImpl implements Game {
         } else if (playerPoints == dealerPoints) {
             rst = 0;
         } else {
-            if (dealerPoints > 21) rst = 1;
-            else rst = (playerPoints > dealerPoints) ? 1 : -1;
+            if (dealerPoints > 21)
+                rst = 1;
+            else
+                rst = (playerPoints > dealerPoints) ? 1 : -1;
         }
         return rst;
     }
@@ -75,8 +77,9 @@ public class GameImpl implements Game {
 
     @Override
     public void setPlayerBet(int bet) throws Exception {
-        if (bet < 0) throw new Exception("Bet can not be negative.");
+        if (bet < 0)
+            throw new Exception("Bet can not be negative.");
         this.playerBet = bet;
     }
-    
+
 }

@@ -17,13 +17,19 @@ public class PlayerServiceImpl implements PlayerService {
     private PlayerDAO playerDAO;
 
     @Transactional
-    public List<Player> getAll() { return playerDAO.getAll();}
+    public List<Player> getAll() {
+        return playerDAO.getAll();
+    }
 
     @Transactional
-    public long getDeposit(UUID playerId) { return playerDAO.getDeposit(playerId); }
+    public long getDeposit(UUID playerId) {
+        return playerDAO.getDeposit(playerId);
+    }
 
     @Transactional
-    public Player getPlayer(UUID playerId) { return playerDAO.getPlayer(playerId); }
+    public Player getPlayer(UUID playerId) {
+        return playerDAO.getPlayer(playerId);
+    }
 
     @Transactional
     public long updateDeposit(UUID playerId, long amount) throws Exception {
@@ -35,5 +41,5 @@ public class PlayerServiceImpl implements PlayerService {
 
         return currentDeposit + amount;
     }
-    
+
 }
