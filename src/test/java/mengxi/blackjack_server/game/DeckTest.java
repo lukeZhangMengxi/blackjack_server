@@ -1,15 +1,13 @@
-package mengxi.game;
+package mengxi.blackjack_server.game;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.UUID;
 
-import org.junit.jupiter.api.Test;
-
-import mengxi.blackjack_server.game.Deck;
+import org.junit.Test;
 
 public class DeckTest {
     @Test
