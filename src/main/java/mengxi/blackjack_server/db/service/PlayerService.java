@@ -13,7 +13,7 @@ public interface PlayerService {
 
     Player getPlayer(UUID playerId);
 
-    long getDeposit(UUID playerId);
+    long getBalance(UUID playerId);
 
-    long updateDeposit(UUID playerId, long amount) throws Exception;
+    long updateBalance(UUID playerId, long amount) throws Exception;
 }

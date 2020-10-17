@@ -15,20 +15,20 @@ public class Player {
 
     private String displayName;
 
-    private long deposit;
+    private long balance;
 
     public Player() {
     };
 
-    public Player(String id, String name, long deposit) {
+    public Player(String id, String name, long balance) {
         this.id = UUID.fromString(id);
         this.displayName = name;
-        this.deposit = deposit;
+        this.balance = balance;
     }
 
     @Override
     public String toString() {
-        return String.format("Customer[id=%d, displayName='%s', deposit=%d]", id, displayName, deposit);
+        return String.format("Customer[id=%d, displayName='%s', balance=%d]", id, displayName, balance);
     }
 
     public UUID getId() {
@@ -39,8 +39,8 @@ public class Player {
         return displayName;
     }
 
-    public long getDeposit() {
-        return deposit;
+    public long getBalance() {
+        return balance;
     }
 
     public void setId(UUID id) {
@@ -51,15 +51,15 @@ public class Player {
         this.displayName = displayName;
     }
 
-    public void setDeposit(long deposit) {
-        this.deposit = deposit;
+    public void setBalance(long balance) {
+        this.balance = balance;
     }
 
     @Override
     public boolean equals(Object obj) {
         Player other = (Player) obj;
         return this.id.toString().equals(other.getId().toString()) && this.displayName.equals(other.getDisplayName())
-                && this.deposit == other.getDeposit();
+                && this.balance == other.getBalance();
     }
 
 }

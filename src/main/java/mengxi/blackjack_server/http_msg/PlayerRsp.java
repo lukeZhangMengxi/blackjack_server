@@ -5,11 +5,11 @@ import java.util.UUID;
 public class PlayerRsp {
     public UUID id;
     public String displayName;
-    public long deposit;
+    public long balance;
 
-    public PlayerRsp(UUID playerId, String displayName, long deposit) {
+    public PlayerRsp(UUID playerId, String displayName, long balance) {
         this.id = playerId;
         this.displayName = displayName;
-        this.deposit = deposit;
+        this.balance = balance;
     }
 }

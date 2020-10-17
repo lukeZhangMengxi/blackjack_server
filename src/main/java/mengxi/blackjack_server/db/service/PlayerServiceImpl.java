@@ -22,8 +22,8 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Transactional
-    public long getDeposit(UUID playerId) {
-        return playerDAO.getDeposit(playerId);
+    public long getBalance(UUID playerId) {
+        return playerDAO.getBalance(playerId);
     }
 
     @Transactional
@@ -32,14 +32,14 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Transactional
-    public long updateDeposit(UUID playerId, long amount) throws Exception {
-        long currentDeposit = playerDAO.getDeposit(playerId);
-        if (currentDeposit + amount < 0) {
-            throw new Exception("Unsufficient deposit amount");
+    public long updateBalance(UUID playerId, long amount) throws Exception {
+        long currentBalance = playerDAO.getBalance(playerId);
+        if (currentBalance + amount < 0) {
+            throw new Exception("Unsufficient balance amount");
         }
-        playerDAO.updateDeposit(playerId, amount);
+        playerDAO.updateBalance(playerId, amount);
 
-        return currentDeposit + amount;
+        return currentBalance + amount;
     }
 
 }

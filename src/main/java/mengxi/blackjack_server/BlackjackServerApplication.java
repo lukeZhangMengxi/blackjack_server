@@ -64,7 +64,7 @@ public class BlackjackServerApplication {
 	public ResponseEntity<Object> player(@PathVariable UUID playerId) throws JsonProcessingException {
 		Player p = playerService.getPlayer(playerId);
 		if (p != null) {
-			PlayerRsp msg = new PlayerRsp(p.getId(), p.getDisplayName(), p.getDeposit());
+			PlayerRsp msg = new PlayerRsp(p.getId(), p.getDisplayName(), p.getBalance());
 			return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
 		}
 		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -77,7 +77,7 @@ public class BlackjackServerApplication {
 		if (games.containsKey(gameId)) {
 			Game g = games.get(gameId);
 			StatusResponse msg = new StatusResponse(g.getPlayerCards(), g.getDealerCards(), g.getPlayerBet(),
-					playerService.getDeposit(playerId));
+					playerService.getBalance(playerId));
 			return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
 		}
 		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -101,7 +101,7 @@ public class BlackjackServerApplication {
 			Game g = games.get(gameId);
 			try {
 				g.setPlayerBet(bet);
-				playerService.updateDeposit(playerId, 0 - bet);
+				playerService.updateBalance(playerId, 0 - bet);
 				return new ResponseEntity<>(null, HttpStatus.OK);
 			} catch (Exception e) {
 				return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
@@ -142,18 +142,18 @@ public class BlackjackServerApplication {
 			int result = g.getResult(playerId);
 
 			try {
-				long newDeposit = -1;
+				long newBalance = -1;
 				// If win, return double bet
 				if (result == 1)
-					newDeposit = playerService.updateDeposit(playerId, 2 * g.getPlayerBet());
+					newBalance = playerService.updateBalance(playerId, 2 * g.getPlayerBet());
 				// If tied, return bet
 				else if (result == 0)
-					newDeposit = playerService.updateDeposit(playerId, g.getPlayerBet());
+					newBalance = playerService.updateBalance(playerId, g.getPlayerBet());
 				// else, return 0
 				else
-					newDeposit = playerService.getDeposit(playerId);
+					newBalance = playerService.getBalance(playerId);
 
-				ResultResponse msg = new ResultResponse(result, newDeposit);
+				ResultResponse msg = new ResultResponse(result, newBalance);
 				return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
 			} catch (Exception e) {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);

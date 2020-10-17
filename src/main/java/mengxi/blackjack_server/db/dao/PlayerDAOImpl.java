@@ -29,17 +29,17 @@ public class PlayerDAOImpl implements PlayerDAO {
     }
 
     @Override
-    public long getDeposit(UUID playerId) {
+    public long getBalance(UUID playerId) {
         final String sql = "select * from player where id = :id";
         SqlParameterSource param = new MapSqlParameterSource().addValue("id", playerId);
 
         Player p = template.queryForObject(sql, param, new BeanPropertyRowMapper<Player>(Player.class));
-        return p.getDeposit();
+        return p.getBalance();
     }
 
     @Override
-    public void updateDeposit(UUID playerId, long amount) {
-        final String sql = "update player set deposit = deposit + :amount where id=:id";
+    public void updateBalance(UUID playerId, long amount) {
+        final String sql = "update player set balance = balance + :amount where id=:id";
         SqlParameterSource param = new MapSqlParameterSource().addValue("id", playerId).addValue("amount", amount);
 
         template.update(sql, param, new GeneratedKeyHolder());

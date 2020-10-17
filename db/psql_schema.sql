@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS player;
 CREATE TABLE player (
     id UUID, 
     displayName VARCHAR(25),
-    deposit BIGINT,
+    balance BIGINT,
     PRIMARY KEY (id)
 );
 

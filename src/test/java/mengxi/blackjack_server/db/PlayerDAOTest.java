@@ -100,31 +100,31 @@ public class PlayerDAOTest {
 	}
 
 	@Test
-	public void selectDepositTest() {
-		long actual = playerDAO.getDeposit(UUID.fromString("8730ba8d-cba1-4e6b-a6da-d463727a57c9"));
+	public void selectBalanceTest() {
+		long actual = playerDAO.getBalance(UUID.fromString("8730ba8d-cba1-4e6b-a6da-d463727a57c9"));
 		assertEquals(100, actual);
 	}
 
 	@Test(expected = EmptyResultDataAccessException.class)
-	public void selectNonExistingPlayerDepositTest() {
+	public void selectNonExistingPlayerBalanceTest() {
 		UUID nonExist = UUID.fromString("940ac3b6-9c12-4c40-b63b-dd5f75427461");
-		playerDAO.getDeposit(nonExist);
+		playerDAO.getBalance(nonExist);
 	}
 
 	@Test
-	public void updateDepositTest() {
+	public void updateBalanceTest() {
 		UUID playerId = UUID.fromString("8730ba8d-cba1-4e6b-a6da-d463727a57c9");
-		long deposit = playerDAO.getDeposit(playerId);
-		assertEquals(100, deposit);
+		long balance = playerDAO.getBalance(playerId);
+		assertEquals(100, balance);
 
-		playerDAO.updateDeposit(playerId, 220);
-		deposit = playerDAO.getDeposit(playerId);
-		assertEquals(320, deposit);
+		playerDAO.updateBalance(playerId, 220);
+		balance = playerDAO.getBalance(playerId);
+		assertEquals(320, balance);
 
 		// Note: bounding check is on PlayerService layer
-		playerDAO.updateDeposit(playerId, -500);
-		deposit = playerDAO.getDeposit(playerId);
-		assertEquals(-180, deposit);
+		playerDAO.updateBalance(playerId, -500);
+		balance = playerDAO.getBalance(playerId);
+		assertEquals(-180, balance);
 
 	}
 

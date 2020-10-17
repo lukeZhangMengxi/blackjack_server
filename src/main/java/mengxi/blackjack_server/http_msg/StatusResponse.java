@@ -6,12 +6,12 @@ public class StatusResponse {
     public List<String> playerCards;
     public List<String> dealerCards;
     public int playerBet;
-    public long playerDeposit;
+    public long playerBalance;
 
-    public StatusResponse(List<String> pCards, List<String> dCards, int bet, long deposit) {
+    public StatusResponse(List<String> pCards, List<String> dCards, int bet, long balance) {
         this.playerCards = pCards;
         this.dealerCards = dCards;
         this.playerBet = bet;
-        this.playerDeposit = deposit;
+        this.playerBalance = balance;
     }
 }

@@ -10,7 +10,7 @@ public interface PlayerDAO {
 
     Player getPlayer(UUID playerId);
 
-    long getDeposit(UUID playerId);
+    long getBalance(UUID playerId);
 
-    void updateDeposit(UUID playerId, long amount);
+    void updateBalance(UUID playerId, long amount);
 }
