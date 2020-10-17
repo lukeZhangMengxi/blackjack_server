@@ -13,4 +13,6 @@ public interface PlayerDAO {
     long getBalance(UUID playerId);
 
     void updateBalance(UUID playerId, long amount);
+
+    UUID createPlayer(String displayName, String email, String passwordHash, String salt);
 }

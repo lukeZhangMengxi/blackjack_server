@@ -128,4 +128,14 @@ public class PlayerDAOTest {
 
 	}
 
+	@Test
+	public void createPlayerTest() {
+		UUID newPlayerId = playerDAO.createPlayer("displayName", "email", "passwordHash", "salt");
+		Player newPlayer = playerDAO.getPlayer(newPlayerId);
+
+		Player expected = new Player(newPlayerId.toString(), "displayName", 0);
+
+		assertEquals(expected, newPlayer);
+	}
+
 }

@@ -17,6 +17,8 @@ public class PlayerDAOImpl implements PlayerDAO {
 
     private NamedParameterJdbcTemplate template;
 
+    private static final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+
     public PlayerDAOImpl(NamedParameterJdbcTemplate template) {
         this.template = template;
     }
@@ -42,7 +44,7 @@ public class PlayerDAOImpl implements PlayerDAO {
         final String sql = "update player set balance = balance + :amount where id=:id";
         SqlParameterSource param = new MapSqlParameterSource().addValue("id", playerId).addValue("amount", amount);
 
-        template.update(sql, param, new GeneratedKeyHolder());
+        template.update(sql, param, keyHolder);
     }
 
     @Override
@@ -51,6 +53,21 @@ public class PlayerDAOImpl implements PlayerDAO {
         SqlParameterSource param = new MapSqlParameterSource().addValue("id", playerId);
 
         return template.queryForObject(sql, param, new BeanPropertyRowMapper<Player>(Player.class));
+    }
+
+    @Override
+    public UUID createPlayer(String displayName, String email, String passwordHash, String salt) {
+        final String sql = "INSERT INTO player VALUES(" + ":id," + ":displayName," + "0," + ":email," + ":passwordHash,"
+                + ":salt" + ")";
+
+        UUID newId = UUID.randomUUID();
+        SqlParameterSource param = new MapSqlParameterSource().addValue("id", newId)
+                .addValue("displayName", displayName).addValue("email", email).addValue("passwordHash", passwordHash)
+                .addValue("salt", salt);
+
+        template.update(sql, param, keyHolder);
+
+        return newId;
     }
 
 }
