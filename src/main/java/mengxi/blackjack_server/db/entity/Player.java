@@ -13,27 +13,36 @@ public class Player {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    private String firstName;
-
-    private String lastName;
+    private String displayName;
 
     private long deposit;
+
+    public Player() {};
+    public Player(String id, String name, long deposit) {
+        this.id = UUID.fromString(id); this.displayName = name; this.deposit = deposit;
+    }
 
 
     @Override
     public String toString() {
-        return String.format("Customer[id=%d, firstName='%s', lastName='%s', deposit=%d]", 
-        id, firstName, lastName, deposit);
+        return String.format("Customer[id=%d, displayName='%s', deposit=%d]", 
+        id, displayName, deposit);
     }
 
     public UUID getId() { return id; }
-    public String getFirstName() { return firstName; }
-    public String getLastName() { return lastName; }
+    public String getDisplayName() { return displayName; }
     public long getDeposit() { return deposit; }
 
     public void setId(UUID id) { this.id = id; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
+    public void setDisplayName(String displayName) { this.displayName = displayName; }
     public void setDeposit(long deposit) { this.deposit = deposit; }
+
+    @Override
+    public boolean equals(Object obj) {
+        Player other = (Player) obj;
+        return this.id.toString().equals(other.getId().toString()) &&
+            this.displayName.equals(other.getDisplayName()) &&
+            this.deposit == other.getDeposit();
+    }
 
 }

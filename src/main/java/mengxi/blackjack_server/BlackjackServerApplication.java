@@ -65,7 +65,7 @@ public class BlackjackServerApplication {
 		Player p = playerService.getPlayer(playerId);
 		if (p != null) {
 			PlayerRsp msg = new PlayerRsp(
-				p.getId(), p.getFirstName(), p.getLastName(), p.getDeposit()
+				p.getId(), p.getDisplayName(), p.getDeposit()
 			);
 			return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
 		}

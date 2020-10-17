@@ -4,13 +4,11 @@ import java.util.UUID;
 
 public class PlayerRsp {
     public UUID id;
-    public String firstName;
-    public String lastName;
+    public String displayName;
     public long deposit;
-    public PlayerRsp(UUID playerId, String firstName, String lastName, long deposit) {
+    public PlayerRsp(UUID playerId, String displayName, long deposit) {
         this.id = playerId;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.displayName = displayName;
         this.deposit = deposit;
     }
 }

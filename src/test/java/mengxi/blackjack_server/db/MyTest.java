@@ -4,9 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +19,10 @@ import org.h2.tools.RunScript;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+
+import mengxi.blackjack_server.db.dao.PlayerDAOImpl;
+import mengxi.blackjack_server.db.entity.Player;
 
 @SuppressWarnings("serial")
 public class MyTest {
@@ -30,6 +31,10 @@ public class MyTest {
 	private static final String JDBC_URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
 	private static final String USER = "sa";
 	private static final String PASSWORD = "";
+
+	private PlayerDAOImpl playerDAO = new PlayerDAOImpl(
+		new NamedParameterJdbcTemplate(getDataSource())
+	);
 
 	@BeforeClass
 	public static void createSchema() throws Exception {
@@ -64,30 +69,17 @@ public class MyTest {
 
 	@Test
 	public void selectAllTest() throws Exception {
-        Connection conn = getDataSource().getConnection();
-        Statement statement = conn.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM player");
-
-        List<String[]> dummyBuf = new ArrayList<String[]>() {{
-            while (resultSet.next()) {
-                this.add(new String[] {
-                    resultSet.getString(1), resultSet.getString(2), resultSet.getString(3)
-                });
-            }
-        }};
+		List<Player> actual = playerDAO.getAll();
         
-        List<String[]> expected = new ArrayList<String[]>() {{
-            this.add(new String[] {"38373330-6261-3864-2d63-6261312d3465", "Larry", "1100"});
+        List<Player> expected = new ArrayList<Player>() {{
+			this.add(new Player("38373330-6261-3864-2d63-6261312d3465", "Larry", 100));
+			this.add(new Player("38373330-6261-3864-2d63-6261322d3465", "LOL", 500));
+			this.add(new Player("38373330-6261-3864-2d63-6261332d3465", "Lee", 1100));
         }};
 
-        assertEquals(expected.size(), dummyBuf.size());
+        assertEquals(expected.size(), actual.size());
         for (int i=0; i<expected.size(); i++) {
-            String[] expectedItem = expected.get(i), dummyBufItem = dummyBuf.get(i);
-            
-            assertEquals(expectedItem.length, dummyBufItem.length);
-            for (int j=0; j<expectedItem.length; j++) {
-                assertEquals(expectedItem[j], dummyBufItem[j]);
-            }
+            assertEquals(expected.get(i), actual.get(i));
         }
 	}
 
