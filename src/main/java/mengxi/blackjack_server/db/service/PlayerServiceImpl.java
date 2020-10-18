@@ -1,5 +1,7 @@
 package mengxi.blackjack_server.db.service;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import mengxi.blackjack_server.db.dao.PlayerDAO;
 import mengxi.blackjack_server.db.entity.Player;
+import mengxi.blackjack_server.db.entity.PlayerWithCredentials;
+import mengxi.blackjack_server.security.HashAPI;
 
 @Service
 public class PlayerServiceImpl implements PlayerService {
@@ -40,6 +44,28 @@ public class PlayerServiceImpl implements PlayerService {
         playerDAO.updateBalance(playerId, amount);
 
         return currentBalance + amount;
+    }
+
+    @Transactional
+    public UUID createUser(String email, String displayName, String passwordRaw)
+            throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        byte[] salt = HashAPI.createSalt();
+        String passwordHash = HashAPI.encode(passwordRaw, "SHA-512", salt);
+
+        return playerDAO.createPlayer(displayName, email, passwordHash, HashAPI.getSalt(salt));
+    }
+
+    @Transactional
+    public UUID authenticate(String email, String passwordRaw)
+            throws UnsupportedEncodingException, NoSuchAlgorithmException {
+        PlayerWithCredentials player = playerDAO.getPlayer(email, PlayerWithCredentials.class);
+        byte[] salt = HashAPI.getSalt(player.getSalt());
+        String inputPasswordHash = HashAPI.encode(passwordRaw, "SHA-512", salt);
+
+        if (!inputPasswordHash.equals(player.getPasswordHash()))
+            return null;
+
+        return player.getId();
     }
 
 }

@@ -1,5 +1,7 @@
 package mengxi.blackjack_server.db.service;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,4 +18,9 @@ public interface PlayerService {
     long getBalance(UUID playerId);
 
     long updateBalance(UUID playerId, long amount) throws Exception;
+
+    UUID createUser(String email, String displayName, String passwordRaw)
+            throws NoSuchAlgorithmException, UnsupportedEncodingException;
+
+    UUID authenticate(String email, String passwordRaw) throws NoSuchAlgorithmException, UnsupportedEncodingException;
 }
