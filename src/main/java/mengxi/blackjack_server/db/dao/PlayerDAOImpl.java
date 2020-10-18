@@ -56,6 +56,14 @@ public class PlayerDAOImpl implements PlayerDAO {
     }
 
     @Override
+    public <T> T getPlayer(String email, Class<T> type) {
+        final String sql = "select * from player where email = :email";
+        SqlParameterSource param = new MapSqlParameterSource().addValue("email", email);
+
+        return template.queryForObject(sql, param, new BeanPropertyRowMapper<T>(type));
+    }
+
+    @Override
     public UUID createPlayer(String displayName, String email, String passwordHash, String salt) {
         final String sql = "INSERT INTO player VALUES(" + ":id," + ":displayName," + "0," + ":email," + ":passwordHash,"
                 + ":salt" + ")";
@@ -68,12 +76,6 @@ public class PlayerDAOImpl implements PlayerDAO {
         template.update(sql, param, keyHolder);
 
         return newId;
-    }
-
-    @Override
-    public UUID authenticate(String email, String passwordRaw) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }
