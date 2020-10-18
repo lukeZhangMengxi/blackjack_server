@@ -96,16 +96,16 @@ public class PlayerDAOTest {
 
 	@Test
 	public void selectOnePlayerWithCredentilTest() {
-		PlayerWithCredentials a = playerDAO.getPlayer(UUID.fromString("8730ba8d-cba1-4e6b-a6da-d463727a57c9"),
+		PlayerWithCredentials actual = playerDAO.getPlayer(UUID.fromString("8730ba8d-cba1-4e6b-a6da-d463727a57c9"),
 				PlayerWithCredentials.class);
-		assertEquals("8730ba8d-cba1-4e6b-a6da-d463727a57c9", a.getId().toString());
-		assertEquals("Larry", a.getDisplayName());
-		assertEquals(100, a.getBalance());
-		assertEquals("test@blackjack.com", a.getEmail());
+		assertEquals("8730ba8d-cba1-4e6b-a6da-d463727a57c9", actual.getId().toString());
+		assertEquals("Larry", actual.getDisplayName());
+		assertEquals(100, actual.getBalance());
+		assertEquals("test@blackjack.com", actual.getEmail());
 		assertEquals(
 				"96f900a313871145e104e8d9e6ff7ed32511b9287828b8117ba6d075e47f09763c547a39233cc4fab64600f79e208a3f1400be3fffe5d57874cf78481b5afc63",
-				a.getPasswordHash());
-		assertEquals("lwje124p[", a.getSalt());
+				actual.getPasswordHash());
+		assertEquals("lwje124p[", actual.getSalt());
 	}
 
 	@Test(expected = EmptyResultDataAccessException.class)
@@ -146,11 +146,14 @@ public class PlayerDAOTest {
 	@Test
 	public void createPlayerTest() {
 		UUID newPlayerId = playerDAO.createPlayer("displayName", "email", "passwordHash", "salt");
-		Player newPlayer = playerDAO.getPlayer(newPlayerId, Player.class);
+		PlayerWithCredentials newPlayer = playerDAO.getPlayer(newPlayerId, PlayerWithCredentials.class);
 
-		Player expected = new Player(newPlayerId.toString(), "displayName", 0);
-
-		assertEquals(expected, newPlayer);
+		assertEquals(newPlayerId, newPlayer.getId());
+		assertEquals("displayName", newPlayer.getDisplayName());
+		assertEquals(0, newPlayer.getBalance());
+		assertEquals("email", newPlayer.getEmail());
+		assertEquals("passwordHash", newPlayer.getPasswordHash());
+		assertEquals("salt", newPlayer.getSalt());
 	}
 
 }
