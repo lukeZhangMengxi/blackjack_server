@@ -25,6 +25,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import mengxi.blackjack_server.db.dao.PlayerDAOImpl;
 import mengxi.blackjack_server.db.entity.Player;
+import mengxi.blackjack_server.db.entity.PlayerWithCredentials;
 
 @SuppressWarnings("serial")
 public class PlayerDAOTest {
@@ -88,15 +89,29 @@ public class PlayerDAOTest {
 
 	@Test
 	public void selectOnePlayerTest() {
-		Player actual = playerDAO.getPlayer(UUID.fromString("8730ba8d-cba1-4e6b-a6da-d463727a57c9"));
+		Player actual = playerDAO.getPlayer(UUID.fromString("8730ba8d-cba1-4e6b-a6da-d463727a57c9"), Player.class);
 		Player expected = new Player("8730ba8d-cba1-4e6b-a6da-d463727a57c9", "Larry", 100);
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void selectOnePlayerWithCredentilTest() {
+		PlayerWithCredentials a = playerDAO.getPlayer(UUID.fromString("8730ba8d-cba1-4e6b-a6da-d463727a57c9"),
+				PlayerWithCredentials.class);
+		assertEquals("8730ba8d-cba1-4e6b-a6da-d463727a57c9", a.getId().toString());
+		assertEquals("Larry", a.getDisplayName());
+		assertEquals(100, a.getBalance());
+		assertEquals("test@blackjack.com", a.getEmail());
+		assertEquals(
+				"96f900a313871145e104e8d9e6ff7ed32511b9287828b8117ba6d075e47f09763c547a39233cc4fab64600f79e208a3f1400be3fffe5d57874cf78481b5afc63",
+				a.getPasswordHash());
+		assertEquals("lwje124p[", a.getSalt());
 	}
 
 	@Test(expected = EmptyResultDataAccessException.class)
 	public void selectNonExistingPlayerTest() {
 		UUID nonExist = UUID.fromString("940ac3b6-9c12-4c40-b63b-dd5f75427461");
-		playerDAO.getPlayer(nonExist);
+		playerDAO.getPlayer(nonExist, Player.class);
 	}
 
 	@Test
@@ -131,7 +146,7 @@ public class PlayerDAOTest {
 	@Test
 	public void createPlayerTest() {
 		UUID newPlayerId = playerDAO.createPlayer("displayName", "email", "passwordHash", "salt");
-		Player newPlayer = playerDAO.getPlayer(newPlayerId);
+		Player newPlayer = playerDAO.getPlayer(newPlayerId, Player.class);
 
 		Player expected = new Player(newPlayerId.toString(), "displayName", 0);
 

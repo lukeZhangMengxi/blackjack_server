@@ -48,11 +48,11 @@ public class PlayerDAOImpl implements PlayerDAO {
     }
 
     @Override
-    public Player getPlayer(UUID playerId) {
+    public <T> T getPlayer(UUID playerId, Class<T> type) {
         final String sql = "select * from player where id = :id";
         SqlParameterSource param = new MapSqlParameterSource().addValue("id", playerId);
 
-        return template.queryForObject(sql, param, new BeanPropertyRowMapper<Player>(Player.class));
+        return template.queryForObject(sql, param, new BeanPropertyRowMapper<T>(type));
     }
 
     @Override
@@ -68,6 +68,12 @@ public class PlayerDAOImpl implements PlayerDAO {
         template.update(sql, param, keyHolder);
 
         return newId;
+    }
+
+    @Override
+    public UUID authenticate(String email, String passwordRaw) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

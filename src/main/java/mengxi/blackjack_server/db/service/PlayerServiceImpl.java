@@ -28,7 +28,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Transactional
     public Player getPlayer(UUID playerId) {
-        return playerDAO.getPlayer(playerId);
+        return playerDAO.getPlayer(playerId, Player.class);
     }
 
     @Transactional

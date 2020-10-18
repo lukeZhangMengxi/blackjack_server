@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
-    <player id="uuid'8730ba8d-cba1-4e6b-a6da-d463727a57c9'" displayName="Larry" balance="100"/>
+    <player id="uuid'8730ba8d-cba1-4e6b-a6da-d463727a57c9'" displayName="Larry" balance="100" email="test@blackjack.com" passwordHash="96f900a313871145e104e8d9e6ff7ed32511b9287828b8117ba6d075e47f09763c547a39233cc4fab64600f79e208a3f1400be3fffe5d57874cf78481b5afc63" salt="lwje124p["/>
     <player id="uuid'766a84e7-22bd-4ed5-aacd-203a5b47a49e'" displayName="LOL" balance="500"/>
     <player id="uuid'2d896eb0-cfee-4196-8b9c-d7f5aa464f1c'" displayName="Lee" balance="1100"/>
 </dataset>
