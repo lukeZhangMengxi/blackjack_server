@@ -20,6 +20,11 @@ public class PlayerServiceImpl implements PlayerService {
     @Autowired
     private PlayerDAO playerDAO;
 
+    public PlayerServiceImpl(PlayerDAO playerDAO) {
+        // For unit test injecting PlayerDAO
+        this.playerDAO = playerDAO;
+    }
+
     @Transactional
     public List<Player> getAll() {
         return playerDAO.getAll();
