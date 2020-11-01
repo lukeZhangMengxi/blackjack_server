@@ -26,9 +26,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import mengxi.blackjack_server.db.service.PlayerService;
 import mengxi.blackjack_server.game.Game;
 import mengxi.blackjack_server.game.GameImpl;
+import mengxi.blackjack_server.http_msg.LoginRsp;
 import mengxi.blackjack_server.http_msg.PlayerRsp;
 import mengxi.blackjack_server.http_msg.ResultResponse;
 import mengxi.blackjack_server.http_msg.StatusResponse;
+import mengxi.blackjack_server.security.JwtAPI;
 import mengxi.blackjack_server.db.entity.Player;
 
 @SpringBootApplication
@@ -74,18 +76,36 @@ public class BlackjackServerApplication {
 	@RequestMapping(method = RequestMethod.POST, value = "/player/create", produces = "application/json")
 	public ResponseEntity<Object> createPlayer(@RequestParam String email, @RequestParam String password,
 			@RequestParam String displayName) {
-		
+
 		if (playerService.getPlayer(email) != null) {
 			return new ResponseEntity<>("Email already registered", HttpStatus.BAD_REQUEST);
 		}
 
 		try {
 			playerService.createUser(email, displayName, password);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.resolve(500));
 		}
-		
+
 		return new ResponseEntity<>(null, HttpStatus.CREATED);
+	}
+
+	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+	@RequestMapping(method = RequestMethod.POST, value = "/player/login", produces = "application/json")
+	public ResponseEntity<Object> loginPlayer(@RequestParam String email, @RequestParam String password) {
+
+		try {
+			UUID playerId = playerService.authenticate(email, password);
+			if (playerId == null) {
+				return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+			} else {
+				String jwtToken = JwtAPI.generateToken(email, 30);
+				LoginRsp msg = new LoginRsp(playerId, jwtToken);
+				return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.resolve(500));
+		}
 	}
 
 	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
