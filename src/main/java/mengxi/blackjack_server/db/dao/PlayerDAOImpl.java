@@ -3,6 +3,7 @@ package mengxi.blackjack_server.db.dao;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -60,7 +61,11 @@ public class PlayerDAOImpl implements PlayerDAO {
         final String sql = "select * from player where email = :email";
         SqlParameterSource param = new MapSqlParameterSource().addValue("email", email);
 
-        return template.queryForObject(sql, param, new BeanPropertyRowMapper<T>(type));
+        try {
+            return template.queryForObject(sql, param, new BeanPropertyRowMapper<T>(type));
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override

@@ -73,4 +73,9 @@ public class PlayerServiceImpl implements PlayerService {
         return player.getId();
     }
 
+    @Override
+    public Player getPlayer(String email) {
+        return playerDAO.getPlayer(email, Player.class);
+    }
+
 }
