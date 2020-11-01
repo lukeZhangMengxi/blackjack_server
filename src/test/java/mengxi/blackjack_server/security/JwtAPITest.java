@@ -9,7 +9,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import org.junit.Test;
 
 public class JwtAPITest {
-    
+
     @Test
     public void generateAndVerifyTokenTest() {
         String token = JwtAPI.generateToken("myEmail", 30);
@@ -29,7 +29,7 @@ public class JwtAPITest {
         String token = JwtAPI.generateToken("myEmail", 0);
         TimeUnit.SECONDS.sleep(1);
 
-        // No expired exception is throwned here
+        // No expired exception is thrown here
         JwtAPI.verifyToken(token, "myEmail");
     }
 }
