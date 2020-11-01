@@ -71,6 +71,24 @@ public class BlackjackServerApplication {
 	}
 
 	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+	@RequestMapping(method = RequestMethod.POST, value = "/player/create", produces = "application/json")
+	public ResponseEntity<Object> createPlayer(@RequestParam String email, @RequestParam String password,
+			@RequestParam String displayName) {
+		
+		if (playerService.getPlayer(email) != null) {
+			return new ResponseEntity<>("Email already registered", HttpStatus.BAD_REQUEST);
+		}
+
+		try {
+			playerService.createUser(email, displayName, password);
+		} catch(Exception e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.resolve(500));
+		}
+		
+		return new ResponseEntity<>(null, HttpStatus.CREATED);
+	}
+
+	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@RequestMapping(method = RequestMethod.GET, value = "/game/{gameId}/status", produces = "application/json")
 	public ResponseEntity<Object> status(@PathVariable UUID gameId, @RequestParam UUID playerId)
 			throws JsonProcessingException {

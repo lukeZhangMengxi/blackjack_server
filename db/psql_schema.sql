@@ -4,7 +4,7 @@ CREATE TABLE player (
     id UUID, 
     displayName VARCHAR(25),
     balance BIGINT,
-    email VARCHAR,
+    email VARCHAR UNIQUE,
     passwordHash VARCHAR,
     salt VARCHAR,
     PRIMARY KEY (id)

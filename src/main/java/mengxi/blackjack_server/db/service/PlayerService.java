@@ -15,6 +15,8 @@ public interface PlayerService {
 
     Player getPlayer(UUID playerId);
 
+    Player getPlayer(String email);
+
     long getBalance(UUID playerId);
 
     long updateBalance(UUID playerId, long amount) throws Exception;
