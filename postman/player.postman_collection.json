@@ -46,7 +46,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/player/create?email=test@test.com&password=123456&displayName=New Name",
+					"raw": "localhost:8080/player/create?email=test@test.com&password=123456&displayName=New Player",
 					"host": [
 						"localhost"
 					],
@@ -66,7 +66,36 @@
 						},
 						{
 							"key": "displayName",
-							"value": "New Name"
+							"value": "New Player"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/player/login?email=test@test.com&password=123456",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"player",
+						"login"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "test@test.com"
+						},
+						{
+							"key": "password",
+							"value": "123456"
 						}
 					]
 				}
