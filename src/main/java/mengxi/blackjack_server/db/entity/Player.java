@@ -11,11 +11,13 @@ public class Player {
 
     @Id
     @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+    UUID id;
 
-    private String displayName;
+    String displayName;
 
-    private long balance;
+    long balance;
+
+    String email;
 
     public Player() {
     };
@@ -43,6 +45,10 @@ public class Player {
         return balance;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     public void setId(UUID id) {
         this.id = id;
     }
@@ -53,6 +59,10 @@ public class Player {
 
     public void setBalance(long balance) {
         this.balance = balance;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override
