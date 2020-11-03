@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -63,13 +65,19 @@ public class BlackjackServerApplication {
 
 	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@RequestMapping(method = RequestMethod.GET, value = "/player/{playerId}", produces = "application/json")
-	public ResponseEntity<Object> player(@PathVariable UUID playerId) throws JsonProcessingException {
+	public ResponseEntity<Object> player(@PathVariable UUID playerId, @RequestHeader("jwt") String token)
+			throws JsonProcessingException {
 		Player p = playerService.getPlayer(playerId);
-		if (p != null) {
-			PlayerRsp msg = new PlayerRsp(p.getId(), p.getDisplayName(), p.getBalance());
-			return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
+		if (p == null) {
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		if (!JwtAPI.verifyToken(token, p.getEmail())) {
+			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+		}
+
+		PlayerRsp msg = new PlayerRsp(p.getId(), p.getDisplayName(), p.getBalance());
+		return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
+
 	}
 
 	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
