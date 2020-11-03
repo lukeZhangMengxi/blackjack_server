@@ -17,11 +17,11 @@ public class JwtAPITest {
         assertFalse(JwtAPI.verifyToken(token, "otherEmail"));
     }
 
-    @Test(expected = TokenExpiredException.class)
+    @Test
     public void tokenExpiredTest() throws InterruptedException {
         String token = JwtAPI.generateToken("myEmail", 0);
         TimeUnit.SECONDS.sleep(2);
-        JwtAPI.verifyToken(token, "myEmail");
+        assertFalse(JwtAPI.verifyToken(token, "myEmail"));
     }
 
     @Test
@@ -30,6 +30,6 @@ public class JwtAPITest {
         TimeUnit.SECONDS.sleep(1);
 
         // No expired exception is thrown here
-        JwtAPI.verifyToken(token, "myEmail");
+        assertTrue(JwtAPI.verifyToken(token, "myEmail"));
     }
 }
