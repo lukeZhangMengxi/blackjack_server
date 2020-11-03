@@ -33,6 +33,7 @@ import mengxi.blackjack_server.http_msg.PlayerRsp;
 import mengxi.blackjack_server.http_msg.ResultResponse;
 import mengxi.blackjack_server.http_msg.StatusResponse;
 import mengxi.blackjack_server.security.JwtAPI;
+import mengxi.blackjack_server.security.JwtAPI.ClaimType;
 import mengxi.blackjack_server.db.entity.Player;
 
 @SpringBootApplication
@@ -67,12 +68,13 @@ public class BlackjackServerApplication {
 	@RequestMapping(method = RequestMethod.GET, value = "/player/{playerId}", produces = "application/json")
 	public ResponseEntity<Object> player(@PathVariable UUID playerId, @RequestHeader("jwt") String token)
 			throws JsonProcessingException {
+		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+		}
+
 		Player p = playerService.getPlayer(playerId);
 		if (p == null) {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-		}
-		if (!JwtAPI.verifyToken(token, p.getEmail())) {
-			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
 		}
 
 		PlayerRsp msg = new PlayerRsp(p.getId(), p.getDisplayName(), p.getBalance());
@@ -107,7 +109,7 @@ public class BlackjackServerApplication {
 			if (playerId == null) {
 				return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
 			} else {
-				String jwtToken = JwtAPI.generateToken(email, 30);
+				String jwtToken = JwtAPI.generateToken(email, playerId.toString(), 30);
 				LoginRsp msg = new LoginRsp(playerId, jwtToken);
 				return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
 			}
@@ -118,8 +120,13 @@ public class BlackjackServerApplication {
 
 	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@RequestMapping(method = RequestMethod.GET, value = "/game/{gameId}/status", produces = "application/json")
-	public ResponseEntity<Object> status(@PathVariable UUID gameId, @RequestParam UUID playerId)
-			throws JsonProcessingException {
+	public ResponseEntity<Object> status(@PathVariable UUID gameId, @RequestParam UUID playerId,
+			@RequestHeader("jwt") String token) throws JsonProcessingException {
+
+		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+		}
+
 		if (games.containsKey(gameId)) {
 			Game g = games.get(gameId);
 			StatusResponse msg = new StatusResponse(g.getPlayerCards(), g.getDealerCards(), g.getPlayerBet(),
@@ -131,18 +138,26 @@ public class BlackjackServerApplication {
 
 	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@PostMapping("/game/start")
-	@ResponseBody
-	public UUID start(@RequestParam UUID playerId) {
+	public ResponseEntity<Object> start(@RequestParam UUID playerId, @RequestHeader("jwt") String token) {
+		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+		}
+
 		Game g = new GameImpl();
 		g.start(playerId);
 		games.put(g.getGameId(), g);
-		return g.getGameId();
+		return new ResponseEntity<>(g.getGameId(), HttpStatus.OK);
 	}
 
 	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@PostMapping("/game/{gameId}/bet")
-	public ResponseEntity<Object> bet(@RequestParam UUID playerId, @RequestParam Integer bet,
-			@PathVariable UUID gameId) {
+	public ResponseEntity<Object> bet(@RequestParam UUID playerId, @RequestParam Integer bet, @PathVariable UUID gameId,
+			@RequestHeader("jwt") String token) {
+
+		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+		}
+
 		if (games.containsKey(gameId)) {
 			Game g = games.get(gameId);
 			try {
@@ -158,7 +173,13 @@ public class BlackjackServerApplication {
 
 	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@PostMapping("/game/{gameId}/hit")
-	public ResponseEntity<Object> hit(@RequestParam UUID playerId, @PathVariable UUID gameId) {
+	public ResponseEntity<Object> hit(@RequestParam UUID playerId, @PathVariable UUID gameId,
+			@RequestHeader("jwt") String token) {
+
+		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+		}
+
 		if (games.containsKey(gameId)) {
 			Game g = games.get(gameId);
 			g.serveRandomCard(playerId);
@@ -169,7 +190,13 @@ public class BlackjackServerApplication {
 
 	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@PostMapping("/game/{gameId}/stand")
-	public ResponseEntity<Object> stand(@RequestParam UUID playerId, @PathVariable UUID gameId) {
+	public ResponseEntity<Object> stand(@RequestParam UUID playerId, @PathVariable UUID gameId,
+			@RequestHeader("jwt") String token) {
+
+		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+		}
+
 		if (games.containsKey(gameId)) {
 			Game g = games.get(gameId);
 			while (g.cardSum(g.getDealerCards()) < 17) {
@@ -182,7 +209,13 @@ public class BlackjackServerApplication {
 
 	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@RequestMapping(method = RequestMethod.GET, value = "/game/{gameId}/result", produces = "application/json")
-	public ResponseEntity<Object> close(@RequestParam UUID playerId, @PathVariable UUID gameId) {
+	public ResponseEntity<Object> close(@RequestParam UUID playerId, @PathVariable UUID gameId,
+			@RequestHeader("jwt") String token) {
+
+		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+		}
+
 		if (games.containsKey(gameId)) {
 			Game g = games.get(gameId);
 			int result = g.getResult(playerId);
