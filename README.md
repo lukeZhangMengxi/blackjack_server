@@ -8,6 +8,8 @@ Feature list:
 <br/>
 
 - Game API: single player against robot dealer
+    - Notes:
+        - All the endpoints below require `jwt` header for authorization; only the player himself/herself has the previlige to their game actions below.
     - POST /game/start?={}
     - POST /game/{gameId}/bet?playerId={}&bet={}
     - POST /game/{gameId}/hit?playerId={}
