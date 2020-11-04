@@ -70,7 +70,7 @@ public class PlayerDAOImpl implements PlayerDAO {
 
     @Override
     public UUID createPlayer(String displayName, String email, String passwordHash, String salt) {
-        final String sql = "INSERT INTO player VALUES(" + ":id," + ":displayName," + "0," + ":email," + ":passwordHash,"
+        final String sql = "INSERT INTO player VALUES(" + ":id," + ":displayName," + "1000," + ":email," + ":passwordHash,"
                 + ":salt" + ")";
 
         UUID newId = UUID.randomUUID();

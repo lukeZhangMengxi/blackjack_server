@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "dcfaef4e-a012-4692-9db7-026b99965966",
-		"name": "test",
+		"name": "game",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
 	"item": [
@@ -22,9 +22,15 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "jwt",
+						"value": "{{jwt}}",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "localhost:8080/game/start?playerId=a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+					"raw": "localhost:8080/game/start?playerId={{playerId}}",
 					"host": [
 						"localhost"
 					],
@@ -36,7 +42,7 @@
 					"query": [
 						{
 							"key": "playerId",
-							"value": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+							"value": "{{playerId}}"
 						}
 					]
 				}
@@ -47,9 +53,15 @@
 			"name": "bet",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "jwt",
+						"value": "{{jwt}}",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "localhost:8080/game/{{gameId}}/bet?playerId=a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11&bet=100",
+					"raw": "localhost:8080/game/{{gameId}}/bet?playerId={{playerId}}&bet=100",
 					"host": [
 						"localhost"
 					],
@@ -62,7 +74,7 @@
 					"query": [
 						{
 							"key": "playerId",
-							"value": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+							"value": "{{playerId}}"
 						},
 						{
 							"key": "bet",
@@ -89,10 +101,15 @@
 						"value": "application/json",
 						"type": "text",
 						"disabled": true
+					},
+					{
+						"key": "jwt",
+						"value": "{{jwt}}",
+						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "localhost:8080/game/{{gameId}}/status?playerId=a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+					"raw": "localhost:8080/game/{{gameId}}/status?playerId={{playerId}}",
 					"host": [
 						"localhost"
 					],
@@ -105,7 +122,7 @@
 					"query": [
 						{
 							"key": "playerId",
-							"value": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+							"value": "{{playerId}}"
 						}
 					]
 				}
@@ -116,9 +133,15 @@
 			"name": "hit",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "jwt",
+						"value": "{{jwt}}",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "localhost:8080/game/{{gameId}}/hit?playerId=a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+					"raw": "localhost:8080/game/{{gameId}}/hit?playerId={{playerId}}",
 					"host": [
 						"localhost"
 					],
@@ -131,7 +154,7 @@
 					"query": [
 						{
 							"key": "playerId",
-							"value": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+							"value": "{{playerId}}"
 						}
 					]
 				}
@@ -142,9 +165,15 @@
 			"name": "stand",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "jwt",
+						"value": "{{jwt}}",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "localhost:8080/game/{{gameId}}/stand?playerId=a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+					"raw": "localhost:8080/game/{{gameId}}/stand?playerId={{playerId}}",
 					"host": [
 						"localhost"
 					],
@@ -157,7 +186,7 @@
 					"query": [
 						{
 							"key": "playerId",
-							"value": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+							"value": "{{playerId}}"
 						}
 					]
 				}
@@ -168,9 +197,15 @@
 			"name": "result",
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "jwt",
+						"value": "{{jwt}}",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "localhost:8080/game/{{gameId}}/result?playerId=a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+					"raw": "localhost:8080/game/{{gameId}}/result?playerId={{playerId}}",
 					"host": [
 						"localhost"
 					],
@@ -183,7 +218,7 @@
 					"query": [
 						{
 							"key": "playerId",
-							"value": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+							"value": "{{playerId}}"
 						}
 					]
 				}

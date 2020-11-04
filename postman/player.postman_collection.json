@@ -7,9 +7,27 @@
 	"item": [
 		{
 			"name": "player",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "jwt",
+						"value": "{{jwt}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
 					"raw": "localhost:8080/player/{{playerId}}",
 					"host": [
@@ -42,6 +60,18 @@
 		},
 		{
 			"name": "create",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f8d228f5-313a-432f-946b-e02b134f89c6",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -75,6 +105,22 @@
 		},
 		{
 			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7212c9cc-6ed0-4f9a-bb5a-b76b7243dbde",
+						"exec": [
+							"const rsp = pm.response.json();",
+							"",
+							"pm.environment.set(\"jwt\", rsp.token);",
+							"pm.environment.set(\"playerId\", rsp.playerId);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
