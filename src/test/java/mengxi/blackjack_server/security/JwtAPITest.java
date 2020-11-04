@@ -16,6 +16,7 @@ public class JwtAPITest {
         assertTrue(JwtAPI.verifyToken(token, "myEmail", ClaimType.EMAIL));
         assertTrue(JwtAPI.verifyToken(token, "player-id", ClaimType.PLAYERID));
         assertFalse(JwtAPI.verifyToken(token, "otherEmail", ClaimType.EMAIL));
+        assertFalse(JwtAPI.verifyToken(token, "other-player-id", ClaimType.PLAYERID));
     }
 
     @Test
