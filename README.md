@@ -1,5 +1,9 @@
 # blackjack_server
-Feature list:
+Please check out the ReactJS browser GIF animation demo with this service at [blackjack_ui/README.md](https://github.com/lukeZhangMengxi/blackjack_ui#blackjack_ui).
+
+<br/>
+
+## Feature list:
 - Player API: player signup and login
     - GET /player/{playerId}
     - POST /player/create?email={}&password={}&displayName={}
