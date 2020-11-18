@@ -6,14 +6,14 @@ import java.util.Random;
 import java.util.UUID;
 
 public class Deck {
-    public static final int NUM_CARDS_IN_A_DECK = 54;
+    public static final int NUM_CARDS_IN_A_DECK = 52;
 
     UUID[][] cards; // 0, 1-10, JQK JOCKER
     int servedCards;
     Random rand;
 
     public Deck() {
-        cards = new UUID[15][4];
+        cards = new UUID[14][4];
         servedCards = 0;
         rand = new Random();
     }
