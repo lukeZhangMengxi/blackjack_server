@@ -1,6 +1,11 @@
 const express = require('express')
 const app = express()
-const port = 1234
+
+if (process.argv.length < 3) {
+  console.log("Please specify a port number")
+  return
+}
+const port = process.argv[2]
 
 app.use('/', express.static('./static'))
 
