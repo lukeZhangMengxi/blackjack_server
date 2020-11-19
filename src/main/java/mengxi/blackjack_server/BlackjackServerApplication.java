@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +42,9 @@ public class BlackjackServerApplication {
 	private PlayerService playerService;
 	private Map<UUID, Game> games = new HashMap<UUID, Game>();
 	private ObjectMapper mapper = new ObjectMapper();
+
+	@Autowired
+	private SimpMessagingTemplate broker;
 
 	@Autowired
 	public void setPlayerService(PlayerService playerService) {
@@ -129,6 +133,11 @@ public class BlackjackServerApplication {
 			Game g = games.get(gameId);
 			StatusResponse msg = new StatusResponse(g.getPlayerCards(), g.getDealerCards(), g.getPlayerBet(),
 					playerService.getBalance(playerId));
+			// Publish the game status
+			broker.convertAndSend(
+				"/topic/game/" + g.getGameId().toString(),
+				msg
+			);
 			return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
 		}
 		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -161,6 +170,18 @@ public class BlackjackServerApplication {
 			try {
 				g.setPlayerBet(bet);
 				playerService.updateBalance(playerId, 0 - bet);
+
+				// Publish the game status
+				broker.convertAndSend(
+					"/topic/game/" + g.getGameId().toString(),
+					new StatusResponse(
+						g.getPlayerCards(),
+						g.getDealerCards(),
+						g.getPlayerBet(),
+						playerService.getBalance(playerId)
+					)
+				);
+
 				return new ResponseEntity<>(null, HttpStatus.OK);
 			} catch (Exception e) {
 				return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
@@ -181,6 +202,18 @@ public class BlackjackServerApplication {
 		if (games.containsKey(gameId)) {
 			Game g = games.get(gameId);
 			g.serveRandomCard(playerId);
+
+			// Publish the game status
+			broker.convertAndSend(
+				"/topic/game/" + g.getGameId().toString(),
+				new StatusResponse(
+					g.getPlayerCards(),
+					g.getDealerCards(),
+					g.getPlayerBet(),
+					playerService.getBalance(playerId)
+				)
+			);
+
 			return new ResponseEntity<>(null, HttpStatus.OK);
 		}
 		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -200,6 +233,18 @@ public class BlackjackServerApplication {
 			while (g.cardSum(g.getDealerCards()) < 17) {
 				g.serveRandomCard(g.getDelearId());
 			}
+
+			// Publish the game status
+			broker.convertAndSend(
+				"/topic/game/" + g.getGameId().toString(),
+				new StatusResponse(
+					g.getPlayerCards(),
+					g.getDealerCards(),
+					g.getPlayerBet(),
+					playerService.getBalance(playerId)
+				)
+			);
+
 			return new ResponseEntity<>(null, HttpStatus.OK);
 		}
 		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -229,6 +274,17 @@ public class BlackjackServerApplication {
 				// else, return 0
 				else
 					newBalance = playerService.getBalance(playerId);
+				
+				// Publish the game status
+				broker.convertAndSend(
+					"/topic/game/" + g.getGameId().toString(),
+					new StatusResponse(
+						g.getPlayerCards(),
+						g.getDealerCards(),
+						g.getPlayerBet(),
+						newBalance
+					)
+				);
 
 				ResultResponse msg = new ResultResponse(result, newBalance);
 				return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
