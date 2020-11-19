@@ -33,6 +33,7 @@ import mengxi.blackjack_server.http_msg.ResultResponse;
 import mengxi.blackjack_server.http_msg.StatusResponse;
 import mengxi.blackjack_server.security.JwtAPI;
 import mengxi.blackjack_server.security.JwtAPI.ClaimType;
+import mengxi.blackjack_server.websocket_msg.GameStatusMsg;
 import mengxi.blackjack_server.db.entity.Player;
 
 @SpringBootApplication
@@ -133,11 +134,13 @@ public class BlackjackServerApplication {
 			Game g = games.get(gameId);
 			StatusResponse msg = new StatusResponse(g.getPlayerCards(), g.getDealerCards(), g.getPlayerBet(),
 					playerService.getBalance(playerId));
+
 			// Publish the game status
 			broker.convertAndSend(
 				"/topic/game/" + g.getGameId().toString(),
-				msg
+				new GameStatusMsg(g, playerService.getPlayer(playerId), playerId)
 			);
+
 			return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
 		}
 		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -174,12 +177,7 @@ public class BlackjackServerApplication {
 				// Publish the game status
 				broker.convertAndSend(
 					"/topic/game/" + g.getGameId().toString(),
-					new StatusResponse(
-						g.getPlayerCards(),
-						g.getDealerCards(),
-						g.getPlayerBet(),
-						playerService.getBalance(playerId)
-					)
+					new GameStatusMsg(g, playerService.getPlayer(playerId), playerId)
 				);
 
 				return new ResponseEntity<>(null, HttpStatus.OK);
@@ -206,12 +204,7 @@ public class BlackjackServerApplication {
 			// Publish the game status
 			broker.convertAndSend(
 				"/topic/game/" + g.getGameId().toString(),
-				new StatusResponse(
-					g.getPlayerCards(),
-					g.getDealerCards(),
-					g.getPlayerBet(),
-					playerService.getBalance(playerId)
-				)
+				new GameStatusMsg(g, playerService.getPlayer(playerId), playerId)
 			);
 
 			return new ResponseEntity<>(null, HttpStatus.OK);
@@ -237,12 +230,7 @@ public class BlackjackServerApplication {
 			// Publish the game status
 			broker.convertAndSend(
 				"/topic/game/" + g.getGameId().toString(),
-				new StatusResponse(
-					g.getPlayerCards(),
-					g.getDealerCards(),
-					g.getPlayerBet(),
-					playerService.getBalance(playerId)
-				)
+				new GameStatusMsg(g, playerService.getPlayer(playerId), playerId)
 			);
 
 			return new ResponseEntity<>(null, HttpStatus.OK);
@@ -278,12 +266,7 @@ public class BlackjackServerApplication {
 				// Publish the game status
 				broker.convertAndSend(
 					"/topic/game/" + g.getGameId().toString(),
-					new StatusResponse(
-						g.getPlayerCards(),
-						g.getDealerCards(),
-						g.getPlayerBet(),
-						newBalance
-					)
+					new GameStatusMsg(g, playerService.getPlayer(playerId), playerId)
 				);
 
 				ResultResponse msg = new ResultResponse(result, newBalance);
