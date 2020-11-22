@@ -7,28 +7,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import org.junit.Test;
 
+import mengxi.blackjack_server.TestUtils;
+
 public class GameTest {
-
-    @SuppressWarnings("serial")
-    void assertUnique(List<String> a, List<String> b) {
-        Set<String> s = new HashSet<>() {
-            {
-                for (String s : a)
-                    this.add(s);
-                for (String s : b)
-                    this.add(s);
-            }
-        };
-
-        assertEquals(a.size() + b.size(), s.size());
-    }
 
     @Test
     public void gameStart() {
@@ -41,7 +27,7 @@ public class GameTest {
 
         assertEquals(2, playerCards.size());
         assertEquals(2, dealerCards.size());
-        assertUnique(playerCards, dealerCards);
+        TestUtils.assertUniqueCards(playerCards, dealerCards);
     }
 
     @Test
