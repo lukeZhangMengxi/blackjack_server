@@ -1,5 +1,6 @@
 package mengxi.blackjack_server.game;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,9 +11,11 @@ import java.util.UUID;
 class PlayerInfo {
     int bet;
     UUID id;
+    String displayName;
 
-    PlayerInfo(UUID id) {
+    PlayerInfo(UUID id, String displayName) {
         this.id = id;
+        this.displayName = displayName;
     }
 
     PlayerInfo(UUID id, int bet) {
@@ -29,7 +32,7 @@ public class MultiPlayerGameImpl implements MultiPlayerGame {
     Set<UUID> finishedPlayerIds;
     boolean started;
 
-    public MultiPlayerGameImpl(UUID ownerId) {
+    public MultiPlayerGameImpl(UUID ownerId, String ownerName) {
         this.id = UUID.randomUUID();
         this.dealerId = UUID.randomUUID();
         this.deck = new Deck();
@@ -37,13 +40,13 @@ public class MultiPlayerGameImpl implements MultiPlayerGame {
 
         this.ownerId = ownerId;
         this.players = new HashMap<>();
-        this.players.put(ownerId, new PlayerInfo(ownerId));
+        this.players.put(ownerId, new PlayerInfo(ownerId, ownerName));
         this.finishedPlayerIds = new HashSet<>();
     }
 
     @Override
-    public void addPlayer(UUID playerId) {
-        players.put(playerId, new PlayerInfo(playerId));
+    public void addPlayer(UUID playerId, String playerName) {
+        players.put(playerId, new PlayerInfo(playerId, playerName));
     }
 
     @Override
@@ -146,6 +149,18 @@ public class MultiPlayerGameImpl implements MultiPlayerGame {
     @Override
     public boolean allPlayerFinished() {
         return finishedPlayerIds.size() == players.size();
+    }
+
+    @Override
+    public List<String> listPlayerNames() {
+        return new ArrayList<String>() {
+            private static final long serialVersionUID = 1L;
+            {
+                for (PlayerInfo p : players.values()) {
+                    this.add(p.displayName);
+                }
+            }
+        };
     }
     
 }

@@ -16,7 +16,7 @@ public interface MultiPlayerGame {
 
     public boolean allPlayerFinished();
 
-    public void addPlayer(UUID playerId);
+    public void addPlayer(UUID playerId, String playerName);
 
     public void start();
 
@@ -33,4 +33,6 @@ public interface MultiPlayerGame {
     public int getResult(UUID playerId);
 
     public void setPlayerBet(UUID playerId, int bet) throws Exception;
+
+    public List<String> listPlayerNames();
 }

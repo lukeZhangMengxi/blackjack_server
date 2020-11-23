@@ -18,12 +18,12 @@ public class MultiPlayerGameTest {
     @Test
     public void simpleGameWorkflow() throws Exception {
         UUID ownerId = UUID.randomUUID();
-        MultiPlayerGameImpl g = new MultiPlayerGameImpl(ownerId);
+        MultiPlayerGameImpl g = new MultiPlayerGameImpl(ownerId, "");
 
         UUID player2Id = UUID.randomUUID();
         UUID player3Id = UUID.randomUUID();
-        g.addPlayer(player2Id);
-        g.addPlayer(player3Id);
+        g.addPlayer(player2Id, "");
+        g.addPlayer(player3Id, "");
         
         // After players join the game, there should be 3 players, each having no poker card
         assertFalse(g.started);
