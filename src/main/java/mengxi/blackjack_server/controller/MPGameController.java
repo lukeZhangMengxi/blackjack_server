@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import mengxi.blackjack_server.db.service.PlayerService;
 import mengxi.blackjack_server.game.MultiPlayerGame;
 import mengxi.blackjack_server.game.MultiPlayerGameImpl;
 import mengxi.blackjack_server.http_msg.MPGameListRsp;
@@ -21,6 +23,9 @@ import mengxi.blackjack_server.http_msg.MPGameListRsp;
 @RestController
 @RequestMapping("mpgame")
 public class MPGameController {
+
+	@Autowired
+	private PlayerService playerService;
 
 	private Map<UUID, MultiPlayerGame> games = new HashMap<UUID, MultiPlayerGame>();
 
@@ -32,7 +37,7 @@ public class MPGameController {
 
 	@RequestMapping(method = RequestMethod.POST, value = "/create", produces = "application/json")
 	public ResponseEntity<Object> create(@RequestParam UUID ownerId) {
-		MultiPlayerGame g = new MultiPlayerGameImpl(ownerId, "");
+		MultiPlayerGame g = new MultiPlayerGameImpl(ownerId, playerService.getPlayer(ownerId).getDisplayName());
 		games.put(g.getGameId(), g);
 		return new ResponseEntity<>(g.getGameId(), HttpStatus.CREATED);
 	}
@@ -53,7 +58,7 @@ public class MPGameController {
 	@RequestMapping(method = RequestMethod.POST, value = "/join/{gameId}", produces = "application/json")
 	public ResponseEntity<Object> join(@PathVariable UUID gameId, @RequestParam UUID playerId) {
 		MultiPlayerGame g = games.get(gameId);
-		g.addPlayer(playerId, "");
+		g.addPlayer(playerId, playerService.getPlayer(playerId).getDisplayName());
 		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
 }
