@@ -66,6 +66,11 @@ public class MPGameController {
 		}
 		
 		MultiPlayerGame g = mpGames.get(gameId);
+
+		if (g.isStarted()) {
+			return new ResponseEntity<>("This game is already started", HttpStatus.BAD_REQUEST);
+		}
+
 		g.addPlayer(playerId, playerService.getPlayer(playerId).getDisplayName());
 		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
