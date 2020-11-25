@@ -12,11 +12,22 @@ Please check out the ReactJS browser GIF animation demo with this service at [bl
 <br/>
 
 - Game API: single player against robot dealer
-    - Notes:
+    - Note:
         - All the endpoints below require `jwt` header for authorization; only the player himself/herself has the previlige to their game actions below.
+    - GET /game/{gameId}/status?playerId={}
+    - GET /game/{gameId}/result?playerId={}
     - POST /game/start?={}
     - POST /game/{gameId}/bet?playerId={}&bet={}
     - POST /game/{gameId}/hit?playerId={}
     - POST /game/{gameId}/stand?playerId={}
-    - GET /game/{gameId}/status?playerId={}
-    - GET /game/{gameId}/result?playerId={}
+
+<br/>
+
+- Multi-player Game API: single player against robot dealer
+    - GET /mpgame/list
+    - Note:
+        - All the endpoints below require `jwt` header for authorization; only the player himself/herself has the previlige to their game actions below.
+    - POST /mpgame/create?ownerId={}
+    - POST /mpgame/join/{gameId}?playerId={}
+    - POST /mpgame/{gameId}/start?playerId={}
+    - POST /mpgame/{gameId}/bet?playerId={}&bet={}
