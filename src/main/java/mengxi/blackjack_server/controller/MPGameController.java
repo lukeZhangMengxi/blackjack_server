@@ -49,11 +49,13 @@ public class MPGameController {
 
 	@RequestMapping(method = RequestMethod.GET, value = "/list", produces = "application/json")
 	public ResponseEntity<Object> listAll() {
-		MPGameListRsp msg = new MPGameListRsp() {{
-			for (MultiPlayerGame g : mpGames.values()) {
-				this.addGame(g.getGameId(), g.listPlayerNames(), g.isStarted());
+		MPGameListRsp msg = new MPGameListRsp() {
+			{
+				for (MultiPlayerGame g : mpGames.values()) {
+					this.addGame(g.getGameId(), g.listPlayerNames(), g.isStarted());
+				}
 			}
-		}};
+		};
 		return new ResponseEntity<>(msg, HttpStatus.OK);
 	}
 
@@ -64,7 +66,7 @@ public class MPGameController {
 		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
 			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
 		}
-		
+
 		MultiPlayerGame g = mpGames.get(gameId);
 
 		if (g.isStarted()) {
@@ -72,6 +74,24 @@ public class MPGameController {
 		}
 
 		g.addPlayer(playerId, playerService.getPlayer(playerId).getDisplayName());
+		return new ResponseEntity<>(null, HttpStatus.OK);
+	}
+
+	@RequestMapping(method = RequestMethod.POST, value = "{gameId}/start", produces = "application/json")
+	public ResponseEntity<Object> start(@PathVariable UUID gameId, @RequestParam UUID playerId,
+			@RequestHeader("jwt") String token) {
+		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+		}
+
+		MultiPlayerGame g = mpGames.get(gameId);
+
+		if (!playerId.equals(g.getOwnerId())) {
+			return new ResponseEntity<>("You are not the owner of this game", HttpStatus.FORBIDDEN);
+		}
+
+		g.start();
+
 		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
 }
