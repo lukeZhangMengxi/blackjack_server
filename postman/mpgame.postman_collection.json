@@ -1,0 +1,95 @@
+{
+	"info": {
+		"_postman_id": "f39da55f-5bce-4df2-b38e-f70c66a2a2a4",
+		"name": "mpgame",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0d47e17c-dfef-4224-a404-f4f4d25998cc",
+						"exec": [
+							"pm.environment.set(\"gameId\", pm.response.json());",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "jwt",
+						"value": "{{jwt}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/mpgame/create?ownerId={{playerId}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"mpgame",
+						"create"
+					],
+					"query": [
+						{
+							"key": "ownerId",
+							"value": "{{playerId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "list",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "localhost:8080/mpgame/list"
+			},
+			"response": []
+		},
+		{
+			"name": "join",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "jwt",
+						"value": "{{jwt}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/mpgame/join/{{gameId}}?playerId={{playerId}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"mpgame",
+						"join",
+						"{{gameId}}"
+					],
+					"query": [
+						{
+							"key": "playerId",
+							"value": "{{playerId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
