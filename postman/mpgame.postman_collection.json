@@ -121,6 +121,42 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "bet",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "jwt",
+						"value": "{{jwt}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/mpgame/{{gameId}}/start?playerId={{playerId}}&bet=100",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"mpgame",
+						"{{gameId}}",
+						"start"
+					],
+					"query": [
+						{
+							"key": "playerId",
+							"value": "{{playerId}}"
+						},
+						{
+							"key": "bet",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"protocolProfileBehavior": {}
