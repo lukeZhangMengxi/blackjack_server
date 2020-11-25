@@ -86,11 +86,46 @@ public class MPGameController {
 
 		MultiPlayerGame g = mpGames.get(gameId);
 
+		if (g == null) {
+			return new ResponseEntity<>("Bad game ID", HttpStatus.BAD_REQUEST);
+		}
+
 		if (!playerId.equals(g.getOwnerId())) {
 			return new ResponseEntity<>("You are not the owner of this game", HttpStatus.FORBIDDEN);
 		}
 
 		g.start();
+
+		return new ResponseEntity<>(null, HttpStatus.OK);
+	}
+
+	@RequestMapping(method = RequestMethod.POST, value = "{gameId}/bet", produces = "application/json")
+	public ResponseEntity<Object> bet(@PathVariable UUID gameId, @RequestParam UUID playerId, @RequestParam int bet,
+			@RequestHeader("jwt") String token) {
+		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+		}
+
+		MultiPlayerGame g = mpGames.get(gameId);
+
+		if (g == null) {
+			return new ResponseEntity<>("Bad game ID", HttpStatus.BAD_REQUEST);
+		}
+
+		if (!g.isStarted()) {
+			return new ResponseEntity<>("The game is not started yet", HttpStatus.FORBIDDEN);
+		}
+
+		if (!playerId.equals(g.getCurrentPlayerId())) {
+			return new ResponseEntity<>("Now is not your turn, please wait", HttpStatus.FORBIDDEN);
+		}
+
+		try {
+			g.setPlayerBet(playerId, bet);
+			playerService.updateBalance(playerId, 0 - bet);
+		} catch (Exception e) {
+			return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
+		}
 
 		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
