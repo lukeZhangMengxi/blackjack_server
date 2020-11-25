@@ -1,7 +1,6 @@
 package mengxi.blackjack_server.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -30,7 +29,7 @@ public class MPGameController {
 	@Autowired
 	private PlayerService playerService;
 
-	private Map<UUID, MultiPlayerGame> games = new HashMap<UUID, MultiPlayerGame>();
+	private Map<UUID, MultiPlayerGame> mpGames = new HashMap<UUID, MultiPlayerGame>();
 
 	@GetMapping("/health")
 	public String health() {
@@ -44,20 +43,17 @@ public class MPGameController {
 		}
 
 		MultiPlayerGame g = new MultiPlayerGameImpl(ownerId, playerService.getPlayer(ownerId).getDisplayName());
-		games.put(g.getGameId(), g);
+		mpGames.put(g.getGameId(), g);
 		return new ResponseEntity<>(g.getGameId(), HttpStatus.CREATED);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/list", produces = "application/json")
 	public ResponseEntity<Object> listAll() {
-		MPGameListRsp msg = new MPGameListRsp(new HashMap<UUID, List<String>>() {
-			private static final long serialVersionUID = 1L;
-			{
-				for (MultiPlayerGame g : games.values()) {
-					this.put(g.getGameId(), g.listPlayerNames());
-				}
+		MPGameListRsp msg = new MPGameListRsp() {{
+			for (MultiPlayerGame g : mpGames.values()) {
+				this.addGame(g.getGameId(), g.listPlayerNames(), g.isStarted());
 			}
-		});
+		}};
 		return new ResponseEntity<>(msg, HttpStatus.OK);
 	}
 
@@ -69,7 +65,7 @@ public class MPGameController {
 			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
 		}
 		
-		MultiPlayerGame g = games.get(gameId);
+		MultiPlayerGame g = mpGames.get(gameId);
 		g.addPlayer(playerId, playerService.getPlayer(playerId).getDisplayName());
 		return new ResponseEntity<>(null, HttpStatus.OK);
 	}

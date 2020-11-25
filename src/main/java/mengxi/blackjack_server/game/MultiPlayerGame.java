@@ -20,6 +20,8 @@ public interface MultiPlayerGame {
 
     public void start();
 
+    public boolean isStarted();
+
     public boolean serveRandomCard(UUID playerId);
 
     public UUID getGameId();

@@ -162,5 +162,10 @@ public class MultiPlayerGameImpl implements MultiPlayerGame {
             }
         };
     }
+
+    @Override
+    public boolean isStarted() {
+        return this.started;
+    }
     
 }
