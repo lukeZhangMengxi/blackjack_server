@@ -37,4 +37,6 @@ public interface MultiPlayerGame {
     public void setPlayerBet(UUID playerId, int bet) throws Exception;
 
     public List<String> listPlayerNames();
+
+    public void dealerAction();
 }
