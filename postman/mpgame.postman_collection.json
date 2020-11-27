@@ -157,6 +157,38 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "hit",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "jwt",
+						"value": "{{jwt}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/mpgame/{{gameId}}/hit?playerId={{playerId}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"mpgame",
+						"{{gameId}}",
+						"hit"
+					],
+					"query": [
+						{
+							"key": "playerId",
+							"value": "{{playerId}}"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"protocolProfileBehavior": {}
