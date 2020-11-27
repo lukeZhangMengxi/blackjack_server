@@ -167,5 +167,12 @@ public class MultiPlayerGameImpl implements MultiPlayerGame {
     public boolean isStarted() {
         return this.started;
     }
+
+    @Override
+    public void dealerAction() {
+        while (Deck.cardSum(this.getDealerCards()) < 17) {
+            this.serveRandomCard(this.dealerId);
+        }
+    }
     
 }

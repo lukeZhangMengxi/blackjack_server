@@ -32,3 +32,4 @@ Please check out the ReactJS browser GIF animation demo with this service at [bl
     - POST /mpgame/{gameId}/start?playerId={}
     - POST /mpgame/{gameId}/bet?playerId={}&bet={}
     - POST /mpgame/{{gameId}}/hit?playerId={}
+    - POST /mpgame/{{gameId}}/stand?playerId={}
