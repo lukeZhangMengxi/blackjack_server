@@ -129,4 +129,30 @@ public class MPGameController {
 
 		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
+
+	@RequestMapping(method = RequestMethod.POST, value = "{gameId}/hit", produces = "application/json")
+	public ResponseEntity<Object> hit(@PathVariable UUID gameId, @RequestParam UUID playerId,
+			@RequestHeader("jwt") String token) {
+		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+		}
+
+		MultiPlayerGame g = mpGames.get(gameId);
+
+		if (g == null) {
+			return new ResponseEntity<>("Bad game ID", HttpStatus.BAD_REQUEST);
+		}
+
+		if (!g.isStarted()) {
+			return new ResponseEntity<>("The game is not started yet", HttpStatus.FORBIDDEN);
+		}
+
+		if (!playerId.equals(g.getCurrentPlayerId())) {
+			return new ResponseEntity<>("Now is not your turn, please wait", HttpStatus.FORBIDDEN);
+		}
+
+		g.serveRandomCard(playerId);
+
+		return new ResponseEntity<>(null, HttpStatus.OK);
+	}
 }
