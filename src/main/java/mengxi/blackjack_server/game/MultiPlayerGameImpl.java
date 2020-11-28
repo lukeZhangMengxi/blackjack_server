@@ -8,22 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-class PlayerInfo {
-    int bet;
-    UUID id;
-    String displayName;
-
-    PlayerInfo(UUID id, String displayName) {
-        this.id = id;
-        this.displayName = displayName;
-    }
-
-    PlayerInfo(UUID id, int bet) {
-        this.id = id;
-        this.bet = bet;
-    }
-}
-
 public class MultiPlayerGameImpl implements MultiPlayerGame {
 
     UUID id, dealerId, currentPlayerId, ownerId;
@@ -174,5 +158,10 @@ public class MultiPlayerGameImpl implements MultiPlayerGame {
             this.serveRandomCard(this.dealerId);
         }
     }
-    
+
+    @Override
+    public Map<UUID, PlayerInfo> getPlayers() {
+        return this.players;
+    }
+
 }
