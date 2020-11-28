@@ -23,7 +23,7 @@ Please check out the ReactJS browser GIF animation demo with this service at [bl
 
 <br/>
 
-- Multi-player Game API: single player against robot dealer
+- Multi-player Game API: Multiple players against robot dealer
     - GET /mpgame/list
     - Note:
         - All the endpoints below require `jwt` header for authorization; only the player himself/herself has the previlige to their game actions below.
