@@ -54,7 +54,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": "localhost:8080/allplayers"
+				"url": "localhost:8080/player/all"
 			},
 			"response": []
 		},
