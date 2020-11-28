@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-
 public class MPGameStatusMsg {
 
     public Map<UUID, PlayerInfo> players;
@@ -20,7 +19,7 @@ public class MPGameStatusMsg {
         if (players.containsKey(id)) {
             return;
         }
-        
+
         players.put(id, new PlayerInfo(cards, name, bet));
     }
 
