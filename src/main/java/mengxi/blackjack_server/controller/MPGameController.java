@@ -180,8 +180,11 @@ public class MPGameController {
 		if (g.allPlayerFinished()) {
 			g.dealerAction();
 		} else {
-			try { g.nextPlayer(); }
-			catch (Exception e) { e.printStackTrace(); }
+			try {
+				g.nextPlayer();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		return new ResponseEntity<>(null, HttpStatus.OK);

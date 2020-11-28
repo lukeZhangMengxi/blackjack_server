@@ -35,63 +35,62 @@ public class PlayerController {
     @Autowired
     private ObjectMapper mapper = new ObjectMapper();
 
-
     @GetMapping("/all")
-	public List<Player> all() {
-		return playerService.getAll();
+    public List<Player> all() {
+        return playerService.getAll();
     }
-    
+
     @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-	@RequestMapping(method = RequestMethod.GET, value = "/{playerId}", produces = "application/json")
-	public ResponseEntity<Object> player(@PathVariable UUID playerId, @RequestHeader("jwt") String token)
-			throws JsonProcessingException {
-		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
-			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
-		}
+    @RequestMapping(method = RequestMethod.GET, value = "/{playerId}", produces = "application/json")
+    public ResponseEntity<Object> player(@PathVariable UUID playerId, @RequestHeader("jwt") String token)
+            throws JsonProcessingException {
+        if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        }
 
-		Player p = playerService.getPlayer(playerId);
-		if (p == null) {
-			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-		}
+        Player p = playerService.getPlayer(playerId);
+        if (p == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
 
-		PlayerRsp msg = new PlayerRsp(p.getId(), p.getDisplayName(), p.getBalance());
-		return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
+        PlayerRsp msg = new PlayerRsp(p.getId(), p.getDisplayName(), p.getBalance());
+        return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
 
-	}
+    }
 
-	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-	@RequestMapping(method = RequestMethod.POST, value = "/create", produces = "application/json")
-	public ResponseEntity<Object> createPlayer(@RequestParam String email, @RequestParam String password,
-			@RequestParam String displayName) {
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+    @RequestMapping(method = RequestMethod.POST, value = "/create", produces = "application/json")
+    public ResponseEntity<Object> createPlayer(@RequestParam String email, @RequestParam String password,
+            @RequestParam String displayName) {
 
-		if (playerService.getPlayer(email) != null) {
-			return new ResponseEntity<>("Email already registered", HttpStatus.BAD_REQUEST);
-		}
+        if (playerService.getPlayer(email) != null) {
+            return new ResponseEntity<>("Email already registered", HttpStatus.BAD_REQUEST);
+        }
 
-		try {
-			playerService.createUser(email, displayName, password);
-		} catch (Exception e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.resolve(500));
-		}
+        try {
+            playerService.createUser(email, displayName, password);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.resolve(500));
+        }
 
-		return new ResponseEntity<>(null, HttpStatus.CREATED);
-	}
+        return new ResponseEntity<>(null, HttpStatus.CREATED);
+    }
 
-	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-	@RequestMapping(method = RequestMethod.POST, value = "/login", produces = "application/json")
-	public ResponseEntity<Object> loginPlayer(@RequestParam String email, @RequestParam String password) {
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+    @RequestMapping(method = RequestMethod.POST, value = "/login", produces = "application/json")
+    public ResponseEntity<Object> loginPlayer(@RequestParam String email, @RequestParam String password) {
 
-		try {
-			UUID playerId = playerService.authenticate(email, password);
-			if (playerId == null) {
-				return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
-			} else {
-				String jwtToken = JwtAPI.generateToken(email, playerId.toString(), 30);
-				LoginRsp msg = new LoginRsp(playerId, jwtToken);
-				return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
-			}
-		} catch (Exception e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.resolve(500));
-		}
-	}
+        try {
+            UUID playerId = playerService.authenticate(email, password);
+            if (playerId == null) {
+                return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+            } else {
+                String jwtToken = JwtAPI.generateToken(email, playerId.toString(), 30);
+                LoginRsp msg = new LoginRsp(playerId, jwtToken);
+                return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.resolve(500));
+        }
+    }
 }

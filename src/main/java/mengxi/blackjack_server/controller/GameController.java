@@ -38,167 +38,156 @@ public class GameController {
 
     @Autowired
     private ObjectMapper mapper;
-    
+
     @Autowired
     private SimpMessagingTemplate broker;
 
     private Map<UUID, Game> games = new HashMap<UUID, Game>();
 
-    
     @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-	@RequestMapping(method = RequestMethod.GET, value = "/{gameId}/status", produces = "application/json")
-	public ResponseEntity<Object> status(@PathVariable UUID gameId, @RequestParam UUID playerId,
-			@RequestHeader("jwt") String token) throws JsonProcessingException {
+    @RequestMapping(method = RequestMethod.GET, value = "/{gameId}/status", produces = "application/json")
+    public ResponseEntity<Object> status(@PathVariable UUID gameId, @RequestParam UUID playerId,
+            @RequestHeader("jwt") String token) throws JsonProcessingException {
 
-		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
-			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
-		}
+        if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        }
 
-		if (games.containsKey(gameId)) {
-			Game g = games.get(gameId);
-			StatusResponse msg = new StatusResponse(g.getPlayerCards(), g.getDealerCards(), g.getPlayerBet(),
-					playerService.getBalance(playerId));
+        if (games.containsKey(gameId)) {
+            Game g = games.get(gameId);
+            StatusResponse msg = new StatusResponse(g.getPlayerCards(), g.getDealerCards(), g.getPlayerBet(),
+                    playerService.getBalance(playerId));
 
-			// Publish the game status
-			broker.convertAndSend(
-				"/topic/game/" + g.getGameId().toString(),
-				new GameStatusMsg(g, playerService.getPlayer(playerId), playerId)
-			);
+            // Publish the game status
+            broker.convertAndSend("/topic/game/" + g.getGameId().toString(),
+                    new GameStatusMsg(g, playerService.getPlayer(playerId), playerId));
 
-			return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
-		}
-		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-	}
+            return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    }
 
-	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-	@PostMapping("/start")
-	public ResponseEntity<Object> start(@RequestParam UUID playerId, @RequestHeader("jwt") String token) {
-		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
-			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
-		}
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+    @PostMapping("/start")
+    public ResponseEntity<Object> start(@RequestParam UUID playerId, @RequestHeader("jwt") String token) {
+        if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        }
 
-		Game g = new GameImpl();
-		g.start(playerId);
-		games.put(g.getGameId(), g);
-		return new ResponseEntity<>(g.getGameId(), HttpStatus.OK);
-	}
+        Game g = new GameImpl();
+        g.start(playerId);
+        games.put(g.getGameId(), g);
+        return new ResponseEntity<>(g.getGameId(), HttpStatus.OK);
+    }
 
-	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-	@PostMapping("/{gameId}/bet")
-	public ResponseEntity<Object> bet(@RequestParam UUID playerId, @RequestParam Integer bet, @PathVariable UUID gameId,
-			@RequestHeader("jwt") String token) {
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+    @PostMapping("/{gameId}/bet")
+    public ResponseEntity<Object> bet(@RequestParam UUID playerId, @RequestParam Integer bet, @PathVariable UUID gameId,
+            @RequestHeader("jwt") String token) {
 
-		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
-			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
-		}
+        if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        }
 
-		if (games.containsKey(gameId)) {
-			Game g = games.get(gameId);
-			try {
-				g.setPlayerBet(bet);
-				playerService.updateBalance(playerId, 0 - bet);
+        if (games.containsKey(gameId)) {
+            Game g = games.get(gameId);
+            try {
+                g.setPlayerBet(bet);
+                playerService.updateBalance(playerId, 0 - bet);
 
-				// Publish the game status
-				broker.convertAndSend(
-					"/topic/game/" + g.getGameId().toString(),
-					new GameStatusMsg(g, playerService.getPlayer(playerId), playerId)
-				);
+                // Publish the game status
+                broker.convertAndSend("/topic/game/" + g.getGameId().toString(),
+                        new GameStatusMsg(g, playerService.getPlayer(playerId), playerId));
 
-				return new ResponseEntity<>(null, HttpStatus.OK);
-			} catch (Exception e) {
-				return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
-			}
-		}
-		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-	}
+                return new ResponseEntity<>(null, HttpStatus.OK);
+            } catch (Exception e) {
+                return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
+            }
+        }
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    }
 
-	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-	@PostMapping("/{gameId}/hit")
-	public ResponseEntity<Object> hit(@RequestParam UUID playerId, @PathVariable UUID gameId,
-			@RequestHeader("jwt") String token) {
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+    @PostMapping("/{gameId}/hit")
+    public ResponseEntity<Object> hit(@RequestParam UUID playerId, @PathVariable UUID gameId,
+            @RequestHeader("jwt") String token) {
 
-		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
-			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
-		}
+        if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        }
 
-		if (games.containsKey(gameId)) {
-			Game g = games.get(gameId);
-			g.serveRandomCard(playerId);
+        if (games.containsKey(gameId)) {
+            Game g = games.get(gameId);
+            g.serveRandomCard(playerId);
 
-			// Publish the game status
-			broker.convertAndSend(
-				"/topic/game/" + g.getGameId().toString(),
-				new GameStatusMsg(g, playerService.getPlayer(playerId), playerId)
-			);
+            // Publish the game status
+            broker.convertAndSend("/topic/game/" + g.getGameId().toString(),
+                    new GameStatusMsg(g, playerService.getPlayer(playerId), playerId));
 
-			return new ResponseEntity<>(null, HttpStatus.OK);
-		}
-		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-	}
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    }
 
-	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-	@PostMapping("/{gameId}/stand")
-	public ResponseEntity<Object> stand(@RequestParam UUID playerId, @PathVariable UUID gameId,
-			@RequestHeader("jwt") String token) {
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+    @PostMapping("/{gameId}/stand")
+    public ResponseEntity<Object> stand(@RequestParam UUID playerId, @PathVariable UUID gameId,
+            @RequestHeader("jwt") String token) {
 
-		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
-			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
-		}
+        if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        }
 
-		if (games.containsKey(gameId)) {
-			Game g = games.get(gameId);
-			while (g.cardSum(g.getDealerCards()) < 17) {
-				g.serveRandomCard(g.getDelearId());
-			}
+        if (games.containsKey(gameId)) {
+            Game g = games.get(gameId);
+            while (g.cardSum(g.getDealerCards()) < 17) {
+                g.serveRandomCard(g.getDelearId());
+            }
 
-			// Publish the game status
-			broker.convertAndSend(
-				"/topic/game/" + g.getGameId().toString(),
-				new GameStatusMsg(g, playerService.getPlayer(playerId), playerId)
-			);
+            // Publish the game status
+            broker.convertAndSend("/topic/game/" + g.getGameId().toString(),
+                    new GameStatusMsg(g, playerService.getPlayer(playerId), playerId));
 
-			return new ResponseEntity<>(null, HttpStatus.OK);
-		}
-		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-	}
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    }
 
-	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-	@RequestMapping(method = RequestMethod.GET, value = "/{gameId}/result", produces = "application/json")
-	public ResponseEntity<Object> close(@RequestParam UUID playerId, @PathVariable UUID gameId,
-			@RequestHeader("jwt") String token) {
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+    @RequestMapping(method = RequestMethod.GET, value = "/{gameId}/result", produces = "application/json")
+    public ResponseEntity<Object> close(@RequestParam UUID playerId, @PathVariable UUID gameId,
+            @RequestHeader("jwt") String token) {
 
-		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
-			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
-		}
+        if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        }
 
-		if (games.containsKey(gameId)) {
-			Game g = games.get(gameId);
-			int result = g.getResult(playerId);
+        if (games.containsKey(gameId)) {
+            Game g = games.get(gameId);
+            int result = g.getResult(playerId);
 
-			try {
-				long newBalance = -1;
-				// If win, return double bet
-				if (result == 1)
-					newBalance = playerService.updateBalance(playerId, 2 * g.getPlayerBet());
-				// If tied, return bet
-				else if (result == 0)
-					newBalance = playerService.updateBalance(playerId, g.getPlayerBet());
-				// else, return 0
-				else
-					newBalance = playerService.getBalance(playerId);
-				
-				// Publish the game status
-				broker.convertAndSend(
-					"/topic/game/" + g.getGameId().toString(),
-					new GameStatusMsg(g, playerService.getPlayer(playerId), playerId)
-				);
+            try {
+                long newBalance = -1;
+                // If win, return double bet
+                if (result == 1)
+                    newBalance = playerService.updateBalance(playerId, 2 * g.getPlayerBet());
+                // If tied, return bet
+                else if (result == 0)
+                    newBalance = playerService.updateBalance(playerId, g.getPlayerBet());
+                // else, return 0
+                else
+                    newBalance = playerService.getBalance(playerId);
 
-				ResultResponse msg = new ResultResponse(result, newBalance);
-				return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
-			} catch (Exception e) {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-		}
-		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-	}
+                // Publish the game status
+                broker.convertAndSend("/topic/game/" + g.getGameId().toString(),
+                        new GameStatusMsg(g, playerService.getPlayer(playerId), playerId));
+
+                ResultResponse msg = new ResultResponse(result, newBalance);
+                return new ResponseEntity<>(mapper.writeValueAsString(msg), HttpStatus.OK);
+            } catch (Exception e) {
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            }
+        }
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    }
 }
