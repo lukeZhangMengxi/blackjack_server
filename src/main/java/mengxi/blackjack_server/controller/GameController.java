@@ -32,17 +32,18 @@ import mengxi.blackjack_server.websocket_msg.GameStatusMsg;
 @RestController
 @RequestMapping("game")
 public class GameController {
+
+    @Autowired
     private PlayerService playerService;
-	private Map<UUID, Game> games = new HashMap<UUID, Game>();
-    private ObjectMapper mapper = new ObjectMapper();
+
+    @Autowired
+    private ObjectMapper mapper;
     
     @Autowired
     private SimpMessagingTemplate broker;
-    
-    @Autowired
-	public void setPlayerService(PlayerService playerService) {
-		this.playerService = playerService;
-    }
+
+    private Map<UUID, Game> games = new HashMap<UUID, Game>();
+
     
     @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@RequestMapping(method = RequestMethod.GET, value = "/{gameId}/status", produces = "application/json")

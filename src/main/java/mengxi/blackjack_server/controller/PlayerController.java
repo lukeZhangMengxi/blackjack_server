@@ -29,14 +29,13 @@ import mengxi.blackjack_server.security.JwtAPI.ClaimType;
 @RequestMapping("player")
 public class PlayerController {
 
-    private PlayerService playerService;
-    private ObjectMapper mapper = new ObjectMapper();
-    
     @Autowired
-	public void setPlayerService(PlayerService playerService) {
-		this.playerService = playerService;
-    }
-    
+    private PlayerService playerService;
+
+    @Autowired
+    private ObjectMapper mapper = new ObjectMapper();
+
+
     @GetMapping("/all")
 	public List<Player> all() {
 		return playerService.getAll();
