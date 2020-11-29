@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -18,9 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 import mengxi.blackjack_server.db.service.PlayerService;
 import mengxi.blackjack_server.game.MultiPlayerGame;
 import mengxi.blackjack_server.game.MultiPlayerGameImpl;
+import mengxi.blackjack_server.game.PlayerInfo;
 import mengxi.blackjack_server.http_msg.MPGameListRsp;
 import mengxi.blackjack_server.security.JwtAPI;
 import mengxi.blackjack_server.security.JwtAPI.ClaimType;
+import mengxi.blackjack_server.websocket_msg.MPGameStatusMsg;
 
 @RestController
 @RequestMapping("mpgame")
@@ -29,7 +32,24 @@ public class MPGameController {
 	@Autowired
 	private PlayerService playerService;
 
+	@Autowired
+	private SimpMessagingTemplate broker;
+
 	private Map<UUID, MultiPlayerGame> mpGames = new HashMap<UUID, MultiPlayerGame>();
+
+	private void broadcast(MultiPlayerGame g) {
+		// Publish the game status
+		broker.convertAndSend("/topic/game/" + g.getGameId().toString(), new MPGameStatusMsg() {
+			{
+				this.setCurrentPlayerId(g.getCurrentPlayerId());
+				this.setDealerCards(g.getDealerCards());
+				for (Map.Entry<UUID, PlayerInfo> p : g.getPlayers().entrySet()) {
+					this.addPlayer(p.getKey(), p.getValue().displayName, g.getPlayerCards(p.getKey()),
+							p.getValue().bet);
+				}
+			}
+		});
+	}
 
 	@GetMapping("/health")
 	public String health() {
@@ -94,7 +114,14 @@ public class MPGameController {
 			return new ResponseEntity<>("You are not the owner of this game", HttpStatus.FORBIDDEN);
 		}
 
+		if (g.isStarted()) {
+			return new ResponseEntity<>("This game is already started", HttpStatus.BAD_REQUEST);
+		}
+
 		g.start();
+
+		// Publish the game status
+		broadcast(g);
 
 		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
@@ -123,6 +150,9 @@ public class MPGameController {
 		try {
 			g.setPlayerBet(playerId, bet);
 			playerService.updateBalance(playerId, 0 - bet);
+
+			// Publish the game status
+			broadcast(g);
 		} catch (Exception e) {
 			return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
 		}
@@ -152,6 +182,9 @@ public class MPGameController {
 		}
 
 		g.serveRandomCard(playerId);
+
+		// Publish the game status
+		broadcast(g);
 
 		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
@@ -187,7 +220,9 @@ public class MPGameController {
 			}
 		}
 
+		// Publish the game status
+		broadcast(g);
+
 		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
-
 }

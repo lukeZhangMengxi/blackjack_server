@@ -1,6 +1,7 @@
 package mengxi.blackjack_server.game;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface MultiPlayerGame {
@@ -39,4 +40,6 @@ public interface MultiPlayerGame {
     public List<String> listPlayerNames();
 
     public void dealerAction();
+
+    public Map<UUID, PlayerInfo> getPlayers();
 }
