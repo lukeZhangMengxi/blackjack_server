@@ -11,6 +11,7 @@ public class MPGameStatusMsg {
     public Map<UUID, PlayerInfo> players;
     public List<String> dealerCards;
     public UUID currentPlayerId;
+    public boolean finished;
 
     public void addPlayer(UUID id, String name, List<String> cards, int bet) {
         if (players == null) {
@@ -29,6 +30,10 @@ public class MPGameStatusMsg {
 
     public void setCurrentPlayerId(UUID id) {
         this.currentPlayerId = id;
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
     }
 
     class PlayerInfo {
