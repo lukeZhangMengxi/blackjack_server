@@ -113,6 +113,14 @@ public class MultiPlayerGameImpl implements MultiPlayerGame {
 
     @Override
     public void nextPlayer() throws Exception {
+        if (this.currentPlayerId != null) {
+            finishedPlayerIds.add(this.currentPlayerId);
+        }
+
+        if (players.size() == finishedPlayerIds.size()) {
+            return;
+        }
+
         int counter = (int) (Math.random() * (players.size() - finishedPlayerIds.size()));
         for (UUID id : players.keySet()) {
             if (finishedPlayerIds.contains(id)) {
@@ -120,7 +128,6 @@ public class MultiPlayerGameImpl implements MultiPlayerGame {
             } else {
                 if (counter-- == 0) {
                     this.currentPlayerId = id;
-                    finishedPlayerIds.add(id);
                     return;
                 }
             }

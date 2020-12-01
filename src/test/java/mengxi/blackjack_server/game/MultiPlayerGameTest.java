@@ -59,11 +59,11 @@ public class MultiPlayerGameTest {
         g.serveRandomCard(curPlayerId);
         assertEquals(3, g.getPlayerCards(curPlayerId).size());
 
+        g.nextPlayer();
+
 
         // Next player's turn
         assertFalse(g.allPlayerFinished());
-
-        g.nextPlayer();
         assertNotEquals(curPlayerId, g.getCurrentPlayerId());
 
         curPlayerId = g.getCurrentPlayerId();
@@ -75,16 +75,17 @@ public class MultiPlayerGameTest {
         g.serveRandomCard(curPlayerId);
         assertEquals(5, g.getPlayerCards(curPlayerId).size());
 
+        g.nextPlayer();
+
 
         // Next player's turn
         assertFalse(g.allPlayerFinished());
-
-        g.nextPlayer();
         assertNotEquals(curPlayerId, g.getCurrentPlayerId());
 
         curPlayerId = g.getCurrentPlayerId();
         assertEquals(2, g.getPlayerCards(curPlayerId).size());
 
+        g.nextPlayer();
 
         // All players finished their turns
         assertTrue(g.allPlayerFinished());

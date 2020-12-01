@@ -43,6 +43,7 @@ public class MPGameController {
 			{
 				this.setCurrentPlayerId(g.getCurrentPlayerId());
 				this.setDealerCards(g.getDealerCards());
+				this.setFinished(g.allPlayerFinished());
 				for (Map.Entry<UUID, PlayerInfo> p : g.getPlayers().entrySet()) {
 					this.addPlayer(p.getKey(), p.getValue().displayName, g.getPlayerCards(p.getKey()),
 							p.getValue().bet);
