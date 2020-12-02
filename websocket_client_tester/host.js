@@ -10,5 +10,5 @@ const port = process.argv[2]
 app.use('/', express.static('./static'))
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
+  console.log(`WebSocket tester listening at http://localhost:${port}`)
 })

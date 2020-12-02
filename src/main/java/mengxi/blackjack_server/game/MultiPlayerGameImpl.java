@@ -171,4 +171,22 @@ public class MultiPlayerGameImpl implements MultiPlayerGame {
         return this.players;
     }
 
+    @Override
+    public int computeResult(UUID playerId) {
+        int dealerPoints = Deck.cardSum(this.getDealerCards());
+        int playerPoints = Deck.cardSum(this.getPlayerCards(playerId));
+        int rst = 0;
+        if (playerPoints > 21) {
+            rst = -1;
+        } else if (playerPoints == dealerPoints) {
+            rst = 0;
+        } else {
+            if (dealerPoints > 21)
+                rst = 1;
+            else
+                rst = (playerPoints > dealerPoints) ? 1 : -1;
+        }
+        return rst;
+    }
+
 }

@@ -5,8 +5,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,14 +27,14 @@ public class MultiPlayerGameTest {
         UUID player3Id = UUID.randomUUID();
         g.addPlayer(player2Id, "");
         g.addPlayer(player3Id, "");
-        
-        // After players join the game, there should be 3 players, each having no poker card
+
+        // After players join the game, there should be 3 players, each having no poker
+        // card
         assertFalse(g.started);
         assertEquals(3, g.players.size());
         for (UUID id : g.players.keySet()) {
             assertTrue(g.getPlayerCards(id).isEmpty());
         }
-
 
         g.start();
 
@@ -47,7 +50,6 @@ public class MultiPlayerGameTest {
             buf.addAll(cards);
         }
 
-
         UUID curPlayerId = g.getCurrentPlayerId();
 
         // First player's turn
@@ -60,7 +62,6 @@ public class MultiPlayerGameTest {
         assertEquals(3, g.getPlayerCards(curPlayerId).size());
 
         g.nextPlayer();
-
 
         // Next player's turn
         assertFalse(g.allPlayerFinished());
@@ -77,7 +78,6 @@ public class MultiPlayerGameTest {
 
         g.nextPlayer();
 
-
         // Next player's turn
         assertFalse(g.allPlayerFinished());
         assertNotEquals(curPlayerId, g.getCurrentPlayerId());
@@ -89,5 +89,27 @@ public class MultiPlayerGameTest {
 
         // All players finished their turns
         assertTrue(g.allPlayerFinished());
+    }
+
+    @Test
+    public void computeResultTest() {
+        MultiPlayerGame g = mock(MultiPlayerGameImpl.class);
+        UUID playerId = UUID.randomUUID();
+        when(g.computeResult(playerId)).thenCallRealMethod();
+
+        // Game tie
+        when(g.getDealerCards()).thenReturn(Arrays.asList("1#2", "5#1"));
+        when(g.getPlayerCards(playerId)).thenReturn(Arrays.asList("1#2", "5#1"));
+        assertEquals(0, g.computeResult(playerId));
+
+        // Game lose
+        when(g.getDealerCards()).thenReturn(Arrays.asList("1#2", "7#1"));
+        when(g.getPlayerCards(playerId)).thenReturn(Arrays.asList("1#2", "5#1"));
+        assertEquals(-1, g.computeResult(playerId));
+
+        // Game win
+        when(g.getDealerCards()).thenReturn(Arrays.asList("1#2", "7#1"));
+        when(g.getPlayerCards(playerId)).thenReturn(Arrays.asList("1#2", "5#1", "5#2"));
+        assertEquals(1, g.computeResult(playerId));
     }
 }

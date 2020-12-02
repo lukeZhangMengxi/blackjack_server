@@ -52,6 +52,20 @@ public class MPGameController {
 		});
 	}
 
+	private void computeResultForEachPlayer(MultiPlayerGame g) {
+		for (UUID playerId : g.getPlayers().keySet()) {
+			try {
+				if (g.computeResult(playerId) == 1) {
+					playerService.updateBalance(playerId, 2 * g.getPlayerBet(playerId));
+				} else if (g.computeResult(playerId) == 0) {
+					playerService.updateBalance(playerId, g.getPlayerBet(playerId));
+				}
+			} catch (Exception e) {
+				// Log error, should not stop the process
+			}
+		}
+	}
+
 	@GetMapping("/health")
 	public String health() {
 		return String.format("OK");
@@ -211,14 +225,15 @@ public class MPGameController {
 			return new ResponseEntity<>("Now is not your turn, please wait", HttpStatus.FORBIDDEN);
 		}
 
+		try {
+			g.nextPlayer();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		if (g.allPlayerFinished()) {
 			g.dealerAction();
-		} else {
-			try {
-				g.nextPlayer();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			computeResultForEachPlayer(g);
 		}
 
 		// Publish the game status
