@@ -225,15 +225,15 @@ public class MPGameController {
 			return new ResponseEntity<>("Now is not your turn, please wait", HttpStatus.FORBIDDEN);
 		}
 
+		try {
+			g.nextPlayer();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		if (g.allPlayerFinished()) {
 			g.dealerAction();
 			computeResultForEachPlayer(g);
-		} else {
-			try {
-				g.nextPlayer();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 		}
 
 		// Publish the game status
