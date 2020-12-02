@@ -42,4 +42,6 @@ public interface MultiPlayerGame {
     public void dealerAction();
 
     public Map<UUID, PlayerInfo> getPlayers();
+
+    public int computeResult(UUID playerId);
 }
