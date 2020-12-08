@@ -3,6 +3,18 @@ Please check out the ReactJS browser GIF animation demo with this service at [bl
 
 <br/>
 
+- Start an example database Docker container:
+    ```
+    chmod +x example_database_init.sh
+    ./example_database_init.sh
+    ```
+- Start the blackjack_server:
+    ```
+    ./gradlew bootRun
+    ```
+
+<br/>
+
 ## Feature list:
 - Player API: player signup and login
     - GET /player/{playerId}
