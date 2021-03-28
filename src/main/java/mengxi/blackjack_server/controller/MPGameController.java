@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -71,6 +72,7 @@ public class MPGameController {
 		return String.format("OK");
 	}
 
+	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@RequestMapping(method = RequestMethod.POST, value = "/create", produces = "application/json")
 	public ResponseEntity<Object> create(@RequestParam UUID ownerId, @RequestHeader("jwt") String token) {
 		if (!JwtAPI.verifyToken(token, ownerId.toString(), ClaimType.PLAYERID)) {
@@ -82,6 +84,7 @@ public class MPGameController {
 		return new ResponseEntity<>(g.getGameId(), HttpStatus.CREATED);
 	}
 
+	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@RequestMapping(method = RequestMethod.GET, value = "/list", produces = "application/json")
 	public ResponseEntity<Object> listAll() {
 		MPGameListRsp msg = new MPGameListRsp() {
@@ -94,6 +97,7 @@ public class MPGameController {
 		return new ResponseEntity<>(msg, HttpStatus.OK);
 	}
 
+	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@RequestMapping(method = RequestMethod.POST, value = "/join/{gameId}", produces = "application/json")
 	public ResponseEntity<Object> join(@PathVariable UUID gameId, @RequestParam UUID playerId,
 			@RequestHeader("jwt") String token) {
@@ -112,6 +116,7 @@ public class MPGameController {
 		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
 
+	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@RequestMapping(method = RequestMethod.POST, value = "{gameId}/start", produces = "application/json")
 	public ResponseEntity<Object> start(@PathVariable UUID gameId, @RequestParam UUID playerId,
 			@RequestHeader("jwt") String token) {
@@ -141,6 +146,7 @@ public class MPGameController {
 		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
 
+	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@RequestMapping(method = RequestMethod.POST, value = "{gameId}/bet", produces = "application/json")
 	public ResponseEntity<Object> bet(@PathVariable UUID gameId, @RequestParam UUID playerId, @RequestParam int bet,
 			@RequestHeader("jwt") String token) {
@@ -175,6 +181,7 @@ public class MPGameController {
 		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
 
+	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@RequestMapping(method = RequestMethod.POST, value = "{gameId}/hit", produces = "application/json")
 	public ResponseEntity<Object> hit(@PathVariable UUID gameId, @RequestParam UUID playerId,
 			@RequestHeader("jwt") String token) {
@@ -204,6 +211,7 @@ public class MPGameController {
 		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
 
+	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 	@RequestMapping(method = RequestMethod.POST, value = "{gameId}/stand", produces = "application/json")
 	public ResponseEntity<Object> stand(@PathVariable UUID gameId, @RequestParam UUID playerId,
 			@RequestHeader("jwt") String token) {
