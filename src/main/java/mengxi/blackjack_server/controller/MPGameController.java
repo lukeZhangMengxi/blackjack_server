@@ -38,6 +38,16 @@ public class MPGameController {
 
 	private Map<UUID, MultiPlayerGame> mpGames = new HashMap<UUID, MultiPlayerGame>();
 
+	private void broadcastGameListStatus() {
+		broker.convertAndSend("/topic/gameListStatus", new MPGameListRsp() {
+			{
+				for (MultiPlayerGame g : mpGames.values()) {
+					this.addGame(g.getGameId(), g.listPlayerNames(), g.isStarted());
+				}
+			}
+		});
+	}
+
 	private void broadcast(MultiPlayerGame g) {
 		// Publish the game status
 		broker.convertAndSend("/topic/game/" + g.getGameId().toString(), new MPGameStatusMsg() {
@@ -81,6 +91,7 @@ public class MPGameController {
 
 		MultiPlayerGame g = new MultiPlayerGameImpl(ownerId, playerService.getPlayer(ownerId).getDisplayName());
 		mpGames.put(g.getGameId(), g);
+		broadcastGameListStatus();
 		return new ResponseEntity<>(g.getGameId(), HttpStatus.CREATED);
 	}
 
@@ -113,6 +124,7 @@ public class MPGameController {
 		}
 
 		g.addPlayer(playerId, playerService.getPlayer(playerId).getDisplayName());
+		broadcastGameListStatus();
 		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
 
