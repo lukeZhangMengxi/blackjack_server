@@ -18,7 +18,7 @@ function connect() {
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/game/' + $("#gameId").val(), function (msg) {
+        stompClient.subscribe($("#websocket_topic").val(), function (msg) {
             console.log(msg);
             // showGreeting(JSON.parse(msg.body).content);
             showGreeting('Received a game status updated');

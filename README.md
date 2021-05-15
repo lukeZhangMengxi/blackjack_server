@@ -45,3 +45,8 @@ Please check out the ReactJS browser GIF animation demo with this service at [bl
     - POST /mpgame/{gameId}/bet?playerId={}&bet={}
     - POST /mpgame/{{gameId}}/hit?playerId={}
     - POST /mpgame/{{gameId}}/stand?playerId={}
+    - Broker Topics:
+        - `/topic/gameListStatus`
+        - `/topic/game/{gameId}`
+        - Note:
+            - Currently, there is no authentication for the broker. Anyone can makes connections to it.

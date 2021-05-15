@@ -30,223 +30,235 @@ import mengxi.blackjack_server.websocket_msg.MPGameStatusMsg;
 @RequestMapping("mpgame")
 public class MPGameController {
 
-	@Autowired
-	private PlayerService playerService;
+    @Autowired
+    private PlayerService playerService;
 
-	@Autowired
-	private SimpMessagingTemplate broker;
+    @Autowired
+    private SimpMessagingTemplate broker;
 
-	private Map<UUID, MultiPlayerGame> mpGames = new HashMap<UUID, MultiPlayerGame>();
+    private Map<UUID, MultiPlayerGame> mpGames = new HashMap<UUID, MultiPlayerGame>();
 
-	private void broadcast(MultiPlayerGame g) {
-		// Publish the game status
-		broker.convertAndSend("/topic/game/" + g.getGameId().toString(), new MPGameStatusMsg() {
-			{
-				this.setCurrentPlayerId(g.getCurrentPlayerId());
-				this.setDealerCards(g.getDealerCards());
-				this.setFinished(g.allPlayerFinished());
-				for (Map.Entry<UUID, PlayerInfo> p : g.getPlayers().entrySet()) {
-					this.addPlayer(p.getKey(), p.getValue().displayName, g.getPlayerCards(p.getKey()),
-							p.getValue().bet);
-				}
-			}
-		});
-	}
+    private void broadcastGameListStatus() {
+        broker.convertAndSend("/topic/gameListStatus", new MPGameListRsp() {
+            {
+                for (MultiPlayerGame g : mpGames.values()) {
+                    this.addGame(g.getGameId(), g.listPlayerNames(), g.isStarted());
+                }
+            }
+        });
+    }
 
-	private void computeResultForEachPlayer(MultiPlayerGame g) {
-		for (UUID playerId : g.getPlayers().keySet()) {
-			try {
-				if (g.computeResult(playerId) == 1) {
-					playerService.updateBalance(playerId, 2 * g.getPlayerBet(playerId));
-				} else if (g.computeResult(playerId) == 0) {
-					playerService.updateBalance(playerId, g.getPlayerBet(playerId));
-				}
-			} catch (Exception e) {
-				// Log error, should not stop the process
-			}
-		}
-	}
+    private void broadcast(MultiPlayerGame g) {
+        // Publish the game status
+        broker.convertAndSend("/topic/game/" + g.getGameId().toString(), new MPGameStatusMsg() {
+            {
+                this.setCurrentPlayerId(g.getCurrentPlayerId());
+                this.setDealerCards(g.getDealerCards());
+                this.setFinished(g.allPlayerFinished());
+                for (Map.Entry<UUID, PlayerInfo> p : g.getPlayers().entrySet()) {
+                    this.addPlayer(p.getKey(), p.getValue().displayName, g.getPlayerCards(p.getKey()),
+                            p.getValue().bet);
+                }
+            }
+        });
+    }
 
-	@GetMapping("/health")
-	public String health() {
-		return String.format("OK");
-	}
+    private void computeResultForEachPlayer(MultiPlayerGame g) {
+        for (UUID playerId : g.getPlayers().keySet()) {
+            try {
+                if (g.computeResult(playerId) == 1) {
+                    playerService.updateBalance(playerId, 2 * g.getPlayerBet(playerId));
+                } else if (g.computeResult(playerId) == 0) {
+                    playerService.updateBalance(playerId, g.getPlayerBet(playerId));
+                }
+            } catch (Exception e) {
+                // Log error, should not stop the process
+            }
+        }
+    }
 
-	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-	@RequestMapping(method = RequestMethod.POST, value = "/create", produces = "application/json")
-	public ResponseEntity<Object> create(@RequestParam UUID ownerId, @RequestHeader("jwt") String token) {
-		if (!JwtAPI.verifyToken(token, ownerId.toString(), ClaimType.PLAYERID)) {
-			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
-		}
+    @GetMapping("/health")
+    public String health() {
+        return String.format("OK");
+    }
 
-		MultiPlayerGame g = new MultiPlayerGameImpl(ownerId, playerService.getPlayer(ownerId).getDisplayName());
-		mpGames.put(g.getGameId(), g);
-		return new ResponseEntity<>(g.getGameId(), HttpStatus.CREATED);
-	}
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+    @RequestMapping(method = RequestMethod.POST, value = "/create", produces = "application/json")
+    public ResponseEntity<Object> create(@RequestParam UUID ownerId, @RequestHeader("jwt") String token) {
+        if (!JwtAPI.verifyToken(token, ownerId.toString(), ClaimType.PLAYERID)) {
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        }
 
-	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-	@RequestMapping(method = RequestMethod.GET, value = "/list", produces = "application/json")
-	public ResponseEntity<Object> listAll() {
-		MPGameListRsp msg = new MPGameListRsp() {
-			{
-				for (MultiPlayerGame g : mpGames.values()) {
-					this.addGame(g.getGameId(), g.listPlayerNames(), g.isStarted());
-				}
-			}
-		};
-		return new ResponseEntity<>(msg, HttpStatus.OK);
-	}
+        MultiPlayerGame g = new MultiPlayerGameImpl(ownerId, playerService.getPlayer(ownerId).getDisplayName());
+        mpGames.put(g.getGameId(), g);
+        broadcastGameListStatus();
+        return new ResponseEntity<>(g.getGameId(), HttpStatus.CREATED);
+    }
 
-	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-	@RequestMapping(method = RequestMethod.POST, value = "/join/{gameId}", produces = "application/json")
-	public ResponseEntity<Object> join(@PathVariable UUID gameId, @RequestParam UUID playerId,
-			@RequestHeader("jwt") String token) {
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+    @RequestMapping(method = RequestMethod.GET, value = "/list", produces = "application/json")
+    public ResponseEntity<Object> listAll() {
+        MPGameListRsp msg = new MPGameListRsp() {
+            {
+                for (MultiPlayerGame g : mpGames.values()) {
+                    this.addGame(g.getGameId(), g.listPlayerNames(), g.isStarted());
+                }
+            }
+        };
+        return new ResponseEntity<>(msg, HttpStatus.OK);
+    }
 
-		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
-			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
-		}
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+    @RequestMapping(method = RequestMethod.POST, value = "/join/{gameId}", produces = "application/json")
+    public ResponseEntity<Object> join(@PathVariable UUID gameId, @RequestParam UUID playerId,
+            @RequestHeader("jwt") String token) {
 
-		MultiPlayerGame g = mpGames.get(gameId);
+        if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        }
 
-		if (g.isStarted()) {
-			return new ResponseEntity<>("This game is already started", HttpStatus.BAD_REQUEST);
-		}
+        MultiPlayerGame g = mpGames.get(gameId);
 
-		g.addPlayer(playerId, playerService.getPlayer(playerId).getDisplayName());
-		return new ResponseEntity<>(null, HttpStatus.OK);
-	}
+        if (g.isStarted()) {
+            return new ResponseEntity<>("This game is already started", HttpStatus.BAD_REQUEST);
+        }
 
-	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-	@RequestMapping(method = RequestMethod.POST, value = "{gameId}/start", produces = "application/json")
-	public ResponseEntity<Object> start(@PathVariable UUID gameId, @RequestParam UUID playerId,
-			@RequestHeader("jwt") String token) {
-		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
-			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
-		}
+        g.addPlayer(playerId, playerService.getPlayer(playerId).getDisplayName());
+        broadcastGameListStatus();
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
 
-		MultiPlayerGame g = mpGames.get(gameId);
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+    @RequestMapping(method = RequestMethod.POST, value = "{gameId}/start", produces = "application/json")
+    public ResponseEntity<Object> start(@PathVariable UUID gameId, @RequestParam UUID playerId,
+            @RequestHeader("jwt") String token) {
+        if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        }
 
-		if (g == null) {
-			return new ResponseEntity<>("Bad game ID", HttpStatus.BAD_REQUEST);
-		}
+        MultiPlayerGame g = mpGames.get(gameId);
 
-		if (!playerId.equals(g.getOwnerId())) {
-			return new ResponseEntity<>("You are not the owner of this game", HttpStatus.FORBIDDEN);
-		}
+        if (g == null) {
+            return new ResponseEntity<>("Bad game ID", HttpStatus.BAD_REQUEST);
+        }
 
-		if (g.isStarted()) {
-			return new ResponseEntity<>("This game is already started", HttpStatus.BAD_REQUEST);
-		}
+        if (!playerId.equals(g.getOwnerId())) {
+            return new ResponseEntity<>("You are not the owner of this game", HttpStatus.FORBIDDEN);
+        }
 
-		g.start();
+        if (g.isStarted()) {
+            return new ResponseEntity<>("This game is already started", HttpStatus.BAD_REQUEST);
+        }
 
-		// Publish the game status
-		broadcast(g);
+        g.start();
 
-		return new ResponseEntity<>(null, HttpStatus.OK);
-	}
+        // Publish the game status
+        broadcast(g);
 
-	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-	@RequestMapping(method = RequestMethod.POST, value = "{gameId}/bet", produces = "application/json")
-	public ResponseEntity<Object> bet(@PathVariable UUID gameId, @RequestParam UUID playerId, @RequestParam int bet,
-			@RequestHeader("jwt") String token) {
-		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
-			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
-		}
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
 
-		MultiPlayerGame g = mpGames.get(gameId);
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+    @RequestMapping(method = RequestMethod.POST, value = "{gameId}/bet", produces = "application/json")
+    public ResponseEntity<Object> bet(@PathVariable UUID gameId, @RequestParam UUID playerId, @RequestParam int bet,
+            @RequestHeader("jwt") String token) {
+        if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        }
 
-		if (g == null) {
-			return new ResponseEntity<>("Bad game ID", HttpStatus.BAD_REQUEST);
-		}
+        MultiPlayerGame g = mpGames.get(gameId);
 
-		if (!g.isStarted()) {
-			return new ResponseEntity<>("The game is not started yet", HttpStatus.FORBIDDEN);
-		}
+        if (g == null) {
+            return new ResponseEntity<>("Bad game ID", HttpStatus.BAD_REQUEST);
+        }
 
-		if (!playerId.equals(g.getCurrentPlayerId())) {
-			return new ResponseEntity<>("Now is not your turn, please wait", HttpStatus.FORBIDDEN);
-		}
+        if (!g.isStarted()) {
+            return new ResponseEntity<>("The game is not started yet", HttpStatus.FORBIDDEN);
+        }
 
-		try {
-			g.setPlayerBet(playerId, bet);
-			playerService.updateBalance(playerId, 0 - bet);
+        if (!playerId.equals(g.getCurrentPlayerId())) {
+            return new ResponseEntity<>("Now is not your turn, please wait", HttpStatus.FORBIDDEN);
+        }
 
-			// Publish the game status
-			broadcast(g);
-		} catch (Exception e) {
-			return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
-		}
+        try {
+            g.setPlayerBet(playerId, bet);
+            playerService.updateBalance(playerId, 0 - bet);
 
-		return new ResponseEntity<>(null, HttpStatus.OK);
-	}
+            // Publish the game status
+            broadcast(g);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
+        }
 
-	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-	@RequestMapping(method = RequestMethod.POST, value = "{gameId}/hit", produces = "application/json")
-	public ResponseEntity<Object> hit(@PathVariable UUID gameId, @RequestParam UUID playerId,
-			@RequestHeader("jwt") String token) {
-		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
-			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
-		}
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
 
-		MultiPlayerGame g = mpGames.get(gameId);
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+    @RequestMapping(method = RequestMethod.POST, value = "{gameId}/hit", produces = "application/json")
+    public ResponseEntity<Object> hit(@PathVariable UUID gameId, @RequestParam UUID playerId,
+            @RequestHeader("jwt") String token) {
+        if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        }
 
-		if (g == null) {
-			return new ResponseEntity<>("Bad game ID", HttpStatus.BAD_REQUEST);
-		}
+        MultiPlayerGame g = mpGames.get(gameId);
 
-		if (!g.isStarted()) {
-			return new ResponseEntity<>("The game is not started yet", HttpStatus.FORBIDDEN);
-		}
+        if (g == null) {
+            return new ResponseEntity<>("Bad game ID", HttpStatus.BAD_REQUEST);
+        }
 
-		if (!playerId.equals(g.getCurrentPlayerId())) {
-			return new ResponseEntity<>("Now is not your turn, please wait", HttpStatus.FORBIDDEN);
-		}
+        if (!g.isStarted()) {
+            return new ResponseEntity<>("The game is not started yet", HttpStatus.FORBIDDEN);
+        }
 
-		g.serveRandomCard(playerId);
+        if (!playerId.equals(g.getCurrentPlayerId())) {
+            return new ResponseEntity<>("Now is not your turn, please wait", HttpStatus.FORBIDDEN);
+        }
 
-		// Publish the game status
-		broadcast(g);
+        g.serveRandomCard(playerId);
 
-		return new ResponseEntity<>(null, HttpStatus.OK);
-	}
+        // Publish the game status
+        broadcast(g);
 
-	@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
-	@RequestMapping(method = RequestMethod.POST, value = "{gameId}/stand", produces = "application/json")
-	public ResponseEntity<Object> stand(@PathVariable UUID gameId, @RequestParam UUID playerId,
-			@RequestHeader("jwt") String token) {
-		if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
-			return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
-		}
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
 
-		MultiPlayerGame g = mpGames.get(gameId);
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+    @RequestMapping(method = RequestMethod.POST, value = "{gameId}/stand", produces = "application/json")
+    public ResponseEntity<Object> stand(@PathVariable UUID gameId, @RequestParam UUID playerId,
+            @RequestHeader("jwt") String token) {
+        if (!JwtAPI.verifyToken(token, playerId.toString(), ClaimType.PLAYERID)) {
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        }
 
-		if (g == null) {
-			return new ResponseEntity<>("Bad game ID", HttpStatus.BAD_REQUEST);
-		}
+        MultiPlayerGame g = mpGames.get(gameId);
 
-		if (!g.isStarted()) {
-			return new ResponseEntity<>("The game is not started yet", HttpStatus.FORBIDDEN);
-		}
+        if (g == null) {
+            return new ResponseEntity<>("Bad game ID", HttpStatus.BAD_REQUEST);
+        }
 
-		if (!playerId.equals(g.getCurrentPlayerId())) {
-			return new ResponseEntity<>("Now is not your turn, please wait", HttpStatus.FORBIDDEN);
-		}
+        if (!g.isStarted()) {
+            return new ResponseEntity<>("The game is not started yet", HttpStatus.FORBIDDEN);
+        }
 
-		try {
-			g.nextPlayer();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        if (!playerId.equals(g.getCurrentPlayerId())) {
+            return new ResponseEntity<>("Now is not your turn, please wait", HttpStatus.FORBIDDEN);
+        }
 
-		if (g.allPlayerFinished()) {
-			g.dealerAction();
-			computeResultForEachPlayer(g);
-		}
+        try {
+            g.nextPlayer();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-		// Publish the game status
-		broadcast(g);
+        if (g.allPlayerFinished()) {
+            g.dealerAction();
+            computeResultForEachPlayer(g);
+        }
 
-		return new ResponseEntity<>(null, HttpStatus.OK);
-	}
+        // Publish the game status
+        broadcast(g);
+
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
 }
