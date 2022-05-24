@@ -1,8 +1,10 @@
-package mengxi.blackjack_server.game;
+package mengxi.blackjack_server.game.two_players;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+
+import mengxi.blackjack_server.game.PlayerAction;
 
 public class TwoPlayersGameStateTest {
     @Test

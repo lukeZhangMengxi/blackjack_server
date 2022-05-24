@@ -1,4 +1,6 @@
-package mengxi.blackjack_server.game;
+package mengxi.blackjack_server.game.two_players;
+
+import mengxi.blackjack_server.game.PlayerAction;
 
 public enum TwoPlayersGameState {
 
